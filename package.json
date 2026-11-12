@@ -1,0 +1,24 @@
+{
+  "name": "registerweb",
+  "private": true,
+  "description": "ระบบโรงเรียนเทควันโด: ลงทะเบียน แพ็กเกจ จองคลาส เช็คชื่อ ครู สอบเลื่อนสาย บัญชี + VAT และเว็บสาธารณะ",
+  "packageManager": "pnpm@9.15.0",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@registerweb/web",
+    "dev:site": "turbo run dev --filter=@registerweb/site",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:start": "pnpm --filter @registerweb/db start",
+    "db:reset": "pnpm --filter @registerweb/db reset",
+    "db:test": "pnpm --filter @registerweb/db test:sql",
+    "db:types": "pnpm --filter @registerweb/db types"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.8.3"
+  }
+}

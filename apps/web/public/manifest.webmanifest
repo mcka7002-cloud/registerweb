@@ -1,0 +1,10 @@
+{
+  "name": "RegisterWeb Kiosk",
+  "short_name": "Kiosk",
+  "start_url": "/kiosk",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#ffffff",
+  "theme_color": "#1e1e1e",
+  "lang": "th"
+}

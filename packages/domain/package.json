@@ -1,0 +1,16 @@
+{
+  "name": "@registerweb/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "กฎธุรกิจที่เป็น pure function (ใช้ร่วมกันระหว่าง web, site และ test) · ฐานข้อมูลบังคับกฎซ้ำเสมอ",
+  "exports": { ".": "./src/index.ts", "./*": "./src/*.ts" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  }
+}

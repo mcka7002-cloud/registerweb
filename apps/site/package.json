@@ -1,0 +1,31 @@
+{
+  "name": "@registerweb/site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "เว็บสาธารณะบนโดเมนโรงเรียน: หน้าแรก สาขา ราคาแพ็กเกจ ข่าว ผลงาน (SEO)",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans-thai": "^5.2.5",
+    "@supabase/supabase-js": "^2.49.4",
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "eslint": "^9.27.0",
+    "eslint-config-next": "^15.3.2",
+    "tailwindcss": "^4.1.7",
+    "typescript": "^5.8.3"
+  }
+}

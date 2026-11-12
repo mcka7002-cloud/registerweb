@@ -1,0 +1,15 @@
+{
+  "name": "@registerweb/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Supabase: migrations, RLS, ฟังก์ชันฝั่ง server และ SQL test ของกฎ Spec v1",
+  "scripts": {
+    "start": "supabase start",
+    "reset": "supabase db reset",
+    "types": "supabase gen types typescript --local > ../../apps/web/src/lib/database.types.ts",
+    "test:sql": "bash scripts/test-sql.sh"
+  },
+  "devDependencies": {
+    "supabase": "^2.23.4"
+  }
+}
