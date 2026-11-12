@@ -7,7 +7,7 @@ URL="${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/postgres}"
 DB="registerweb_test_$$"
 psql "$URL" -v ON_ERROR_STOP=1 -q -c "create database $DB"
 trap 'psql "$URL" -q -c "drop database if exists $DB" >/dev/null' EXIT
-TEST_URL="${URL%/*}/$DB"
+TEST_URL=$(printf '%s' "$URL" | sed -E "s#/([^/?]*)(\?.*)?\$#/$DB\2#")
 psql "$TEST_URL" -v ON_ERROR_STOP=1 -q -f supabase/tests/auth_stub.sql
 for f in supabase/migrations/*.sql; do
   echo "migrate $(basename "$f")"
