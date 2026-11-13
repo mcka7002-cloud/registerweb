@@ -65,6 +65,29 @@ Every function returns `jsonb`. On a rule violation it raises an exception whose
 | `record_checkin(...)` | existing signature | (fixed as above) | existing | existing `problem` texts |
 | `my_home()` | any signed-in | `{role, branches: [{id, name}]}` for routing | | |
 
+#### Accepted changes from WS A (implemented; this list wins over the table above)
+- New error codes: `SESSION_UNAVAILABLE` (`book_sessions`: session missing, cancelled, or another branch) and
+  `FIELDS_REQUIRED` (`approve_registration`: Thai/English name or birth date missing).
+- `approve_registration`: `p_student` is merged over `registrations.payload`, so the UI may send only changed
+  fields. `p_student.guardians` = `[{full_name, nickname, relation, phones[]}]`, at most 2. Works on `pending`
+  and `trial_booked` registrations.
+- `update_student` accepts only: nickname, first_name, last_name, first_name_en, last_name_en, height_cm,
+  weight_kg, uniform_size, medical_notes, emergency_name, emergency_phone (other keys ignored).
+- `record_checkin`: raises `FORBIDDEN` when the caller may not check in at the branch; new problem text
+  `แพ็กเกจของสาขาอื่น`; a never-started package past `must_start_by` reports `แพ็กเกจหมดอายุ`; the result also has
+  `student_name` (first + last name).
+- Student codes: `S` + 5 digits from a per-branch counter (`student_code_sequences`), skipping numbers already
+  used anywhere, since `students.code` is unique across branches.
+- `orders.subtotal` and `documents.subtotal` are the **net amount before VAT**; VAT is computed once on the order.
+- `compute_vat(price, enabled, inclusive, rate)` returns `table(net, vat, total)` (an array in generated types).
+- `my_home()`: admin gets all branches; customer gets the branches of linked students; others get
+  `profile_branches`.
+- `profiles_self`: staff also see parent profiles linked to registrations or students in their branches.
+- `exam_black` price is seeded as 0 until the school gives an amount.
+- Seed users: `admin@demo.test`, `manager@demo.test`, `teacher@demo.test`, `parent@demo.test`,
+  `kiosk@demo.test` (password in the header of `seed.sql`, local only). Demo student `S00001` with an 8-session
+  package, membership, receipt `RC-BKK-2026-00001`, and 4 bookings; one extra pending registration.
+
 Reads use RLS: students, student_packages, bookings, attendances, class_sessions, orders, order_items,
 documents, registrations, profiles.
 

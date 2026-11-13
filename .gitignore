@@ -12,3 +12,6 @@ next-env.d.ts
 .DS_Store
 packages/db/supabase/.branches
 packages/db/supabase/.temp
+
+# Claude Code sub-agent worktrees
+.claude/worktrees/
