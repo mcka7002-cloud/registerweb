@@ -16,6 +16,11 @@ port = 54323
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/auth/callback"]
 
+[auth.email]
+# local dev: ล็อกอินด้วย email + password (ผู้ใช้ทดสอบใน seed.sql) · production ใช้ Google
+enable_signup = true
+enable_confirmations = false
+
 [auth.external.google]
 # ทุก role ล็อกอินด้วย Gmail
 enabled = true

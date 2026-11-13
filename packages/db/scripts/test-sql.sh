@@ -14,9 +14,17 @@ for f in supabase/migrations/*.sql; do
   psql "$TEST_URL" -v ON_ERROR_STOP=1 -q -f "$f"
 done
 set +e
-OUT=$(psql "$TEST_URL" -v ON_ERROR_STOP=1 -q -f supabase/tests/rules_test.sql 2>&1)
-STATUS=$?
+OUT=""
+STATUS=0
+for t in supabase/tests/*_test.sql; do
+  echo "test $(basename "$t")"
+  R=$(psql "$TEST_URL" -v ON_ERROR_STOP=1 -q -f "$t" 2>&1)
+  S=$?
+  echo "$R" | grep -oE '(ok  .*|FAIL: .*|ERROR: .*)'
+  OUT="$OUT
+$R"
+  if [ $S -ne 0 ]; then STATUS=$S; fi
+done
 set -e
-echo "$OUT" | grep -oE '(ok  .*|FAIL: .*|ERROR: .*)'
 if [ $STATUS -ne 0 ]; then echo "SQL tests failed"; exit $STATUS; fi
 echo "SQL tests passed ($(echo "$OUT" | grep -c 'ok  ') checks)"
