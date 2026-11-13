@@ -5,6 +5,7 @@
 
 - **Spec / Tasks / Flow:** [RegisterWeb Team Workspace](https://claude.ai/artifact/X1NSbhgBvcEg6USkZdoD47) (Spec v1 ล็อก 12 พ.ย. 2026)
 - **ที่มาของกฎ:** [Grill Session](https://claude.ai/artifact/3LroTe8FRVgj3n1sJwFdSW)
+- **การตัดสินใจด้านสถาปัตยกรรม (ADR):** [docs/adr](docs/adr/README.md)
 - **ดีไซน์:** [Figma RegisterWeb](https://www.figma.com/design/oY12YnecLV5ObKXacDqP3D/RegisterWeb)
 
 ## โครง mono-repo
