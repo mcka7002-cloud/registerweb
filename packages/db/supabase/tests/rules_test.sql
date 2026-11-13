@@ -9,13 +9,14 @@ begin
 end $$;
 
 -- ---------- ข้อมูลตั้งต้น ----------
-insert into auth.users values ('00000000-0000-0000-0000-00000000000a'), ('00000000-0000-0000-0000-00000000000b'),
+insert into auth.users (id) values ('00000000-0000-0000-0000-00000000000a'), ('00000000-0000-0000-0000-00000000000b'),
   ('00000000-0000-0000-0000-00000000000c'), ('00000000-0000-0000-0000-00000000000d');
 insert into public.profiles (id, full_name, email, role) values
   ('00000000-0000-0000-0000-00000000000a', 'Admin', 'admin@gmail.com', 'admin'),
   ('00000000-0000-0000-0000-00000000000b', 'ครูบี', 'teacher@gmail.com', 'teacher'),
   ('00000000-0000-0000-0000-00000000000c', 'แม่', 'mom@gmail.com', 'customer'),
-  ('00000000-0000-0000-0000-00000000000d', 'พ่อ', 'dad@gmail.com', 'customer');
+  ('00000000-0000-0000-0000-00000000000d', 'พ่อ', 'dad@gmail.com', 'customer')
+  on conflict (id) do update set full_name = excluded.full_name, email = excluded.email, role = excluded.role;   -- trigger สร้าง profile แล้ว
 insert into public.branches (id, code, name) values ('10000000-0000-0000-0000-000000000001', 'BKK', 'สาขาหลัก');
 insert into public.profile_branches values ('00000000-0000-0000-0000-00000000000b', '10000000-0000-0000-0000-000000000001');
 insert into public.students (id, branch_id, code, first_name, last_name, first_name_en, last_name_en, nickname, birth_date, membership_expires_on)
