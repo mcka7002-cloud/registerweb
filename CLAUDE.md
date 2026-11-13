@@ -32,5 +32,8 @@ publishing anything.
 - When a task is too big for one pass, write the contract first (files each part owns, interfaces, done
   criteria; see `docs/mvp1/contracts.md`), then give each part to a sub-agent in its own git worktree.
   Parts that touch the same files never run at the same time.
+- Gotcha: sub-agent worktrees start from `main`, not from the integration branch. Tell each sub-agent to run
+  `git merge --no-edit <integration branch>` first, and expect add/add conflicts on files two parts both
+  created (e.g. `pnpm-lock.yaml`, `database.types.ts`).
 - The lead merges the branches and runs one overall review: tests, typecheck, lint, build, the ADR 0001 data
   access rules, and an end-to-end run of the demo script. Sub-agent reports are not proof; check the result.
