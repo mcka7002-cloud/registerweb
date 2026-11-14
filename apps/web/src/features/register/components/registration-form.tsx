@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, startTransition } from "react";
 import { useTranslations } from "next-intl";
+import { ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn, errorKey } from "@/lib/utils";
 import { submitRegistration } from "../actions";
 import type { BranchOption } from "../queries";
-import type { RegisterResult, RegistrationField } from "../schema";
+import { PHOTO_ACCEPT, PHOTO_MAX_BYTES, photoType, type RegisterResult, type RegistrationField } from "../schema";
 
 const textareaClass =
   "min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm";
@@ -57,6 +58,107 @@ function TextField({
   );
 }
 
+/** Optional student photo with a local preview. The server checks type and size again. */
+function PhotoField({
+  invalid,
+  uploadFailed,
+  resetKey,
+}: {
+  invalid: Invalid;
+  uploadFailed: boolean;
+  resetKey: number;
+}) {
+  const t = useTranslations("register");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [localError, setLocalError] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  // The parent resets the form after a successful submit.
+  useEffect(() => {
+    setPreview(null);
+    setFileName("");
+    setLocalError(false);
+  }, [resetKey]);
+
+  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.currentTarget.files?.[0];
+    setPreviewFailed(false);
+    if (!file) {
+      setPreview(null);
+      setFileName("");
+      setLocalError(false);
+      return;
+    }
+    if (!photoType(file) || file.size > PHOTO_MAX_BYTES) {
+      e.currentTarget.value = "";
+      setPreview(null);
+      setFileName("");
+      setLocalError(true);
+      return;
+    }
+    setLocalError(false);
+    setFileName(file.name);
+    setPreview(URL.createObjectURL(file));
+  }
+
+  function clear() {
+    if (inputRef.current) inputRef.current.value = "";
+    setPreview(null);
+    setFileName("");
+    setLocalError(false);
+  }
+
+  const showError = localError || invalid.has("photo");
+  return (
+    <div className="flex flex-col gap-1.5 sm:col-span-2">
+      <Label htmlFor="reg-photo">{t("fields.photo")}</Label>
+      <div className="flex items-center gap-4">
+        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted text-muted-foreground">
+          {preview && !previewFailed ? (
+            // eslint-disable-next-line @next/next/no-img-element -- local blob preview
+            <img src={preview} alt={t("photo.previewAlt")} className="size-full object-cover" onError={() => setPreviewFailed(true)} />
+          ) : (
+            <ImageIcon className="size-8" aria-hidden />
+          )}
+        </div>
+        <div className="flex min-w-0 flex-col gap-2">
+          <Input
+            ref={inputRef}
+            id="reg-photo"
+            name="photo"
+            type="file"
+            accept={PHOTO_ACCEPT}
+            onChange={onChange}
+            aria-invalid={showError || undefined}
+            aria-describedby="reg-photo-hint"
+          />
+          <p id="reg-photo-hint" className="text-xs text-muted-foreground">
+            {previewFailed && fileName ? t("photo.noPreview", { name: fileName }) : t("photo.hint")}
+          </p>
+          {fileName ? (
+            <Button type="button" variant="outline" size="sm" className="self-start" onClick={clear}>
+              {t("photo.remove")}
+            </Button>
+          ) : null}
+        </div>
+      </div>
+      {showError ? (
+        <p className="text-sm text-destructive">
+          {uploadFailed && !localError ? t("photo.uploadFailed") : t("fieldErrors.photo")}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
   const t = useTranslations("register");
   const tRoot = useTranslations();
@@ -65,6 +167,7 @@ export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
   const defaultBranch = branches.length === 1 ? branches[0].id : "";
   const [branchId, setBranchId] = useState(defaultBranch);
   const [gender, setGender] = useState("");
+  const [resetKey, setResetKey] = useState(0);
 
   const invalid = new Set<RegistrationField>(state && !state.ok && state.fields ? state.fields : []);
 
@@ -75,8 +178,11 @@ export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
       formRef.current?.reset();
       setBranchId(defaultBranch);
       setGender("");
+      setResetKey((k) => k + 1);
     } else if (state.code === "INVALID_INPUT") {
       toast.error(t("invalid"));
+    } else if (state.code === "UPLOAD_FAILED") {
+      toast.error(t("photo.uploadFailed"));
     } else {
       toast.error(tRoot(errorKey(state.code)));
     }
@@ -153,6 +259,7 @@ export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
             />
             <FieldError name="medical_notes" invalid={invalid} />
           </div>
+          <PhotoField invalid={invalid} uploadFailed={state?.ok === false && state.code === "UPLOAD_FAILED"} resetKey={resetKey} />
         </CardContent>
       </Card>
 
