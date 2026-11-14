@@ -223,14 +223,14 @@ isOneToOne: false
                   ]
                 },"branch_settings": {
                   Row: {
-                    "branch_id": string,"updated_at": string,"vat_enabled": boolean,"vat_inclusive": boolean,"vat_rate": number
+                    "bank_account": string | null,"branch_id": string,"promptpay_id": string | null,"updated_at": string,"vat_enabled": boolean,"vat_inclusive": boolean,"vat_rate": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "branch_id": string,"updated_at"?: string,"vat_enabled"?: boolean,"vat_inclusive"?: boolean,"vat_rate"?: number
+                    "bank_account"?: string | null,"branch_id": string,"promptpay_id"?: string | null,"updated_at"?: string,"vat_enabled"?: boolean,"vat_inclusive"?: boolean,"vat_rate"?: number
                   }
                   Update: {
-                    "branch_id"?: string,"updated_at"?: string,"vat_enabled"?: boolean,"vat_inclusive"?: boolean,"vat_rate"?: number
+                    "bank_account"?: string | null,"branch_id"?: string,"promptpay_id"?: string | null,"updated_at"?: string,"vat_enabled"?: boolean,"vat_inclusive"?: boolean,"vat_rate"?: number
                   }
                   Relationships: [
                     {
@@ -799,14 +799,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "account_id": string | null,"branch_id": string,"created_at": string,"created_by": string,"discount": number,"id": string,"promotion_id": string | null,"reject_reason": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"slip_path": string | null,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"vat_amount": number
+                    "account_id": string | null,"branch_id": string,"created_at": string,"created_by": string,"discount": number,"id": string,"pay_method": Database["public"]['Enums']["payment_method"] | null,"promotion_id": string | null,"reject_reason": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"slip_path": string | null,"status": Database["public"]['Enums']["order_status"],"subtotal": number,"total": number,"vat_amount": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"branch_id": string,"created_at"?: string,"created_by": string,"discount"?: number,"id"?: string,"promotion_id"?: string | null,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"slip_path"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number
+                    "account_id"?: string | null,"branch_id": string,"created_at"?: string,"created_by": string,"discount"?: number,"id"?: string,"pay_method"?: Database["public"]['Enums']["payment_method"] | null,"promotion_id"?: string | null,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"slip_path"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number
                   }
                   Update: {
-                    "account_id"?: string | null,"branch_id"?: string,"created_at"?: string,"created_by"?: string,"discount"?: number,"id"?: string,"promotion_id"?: string | null,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"slip_path"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number
+                    "account_id"?: string | null,"branch_id"?: string,"created_at"?: string,"created_by"?: string,"discount"?: number,"id"?: string,"pay_method"?: Database["public"]['Enums']["payment_method"] | null,"promotion_id"?: string | null,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"slip_path"?: string | null,"status"?: Database["public"]['Enums']["order_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number
                   }
                   Relationships: [
                     {
@@ -1547,7 +1547,13 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "approve_registration":
+            "_create_package_order":
+{ Args: { "p_method": Database["public"]['Enums']["payment_method"],"p_slip": string,"p_status": Database["public"]['Enums']["order_status"],"p_student": string,"p_template": string,"p_with_membership": boolean }; Returns: string
+                           },
+"_fulfill_order":
+{ Args: { "p_order": string }; Returns: Json
+                           },
+"approve_registration":
 { Args: { "p_registration": string,"p_student": Json }; Returns: Json
                            },
 "bkk_today":
@@ -1603,11 +1609,20 @@ isOneToOne: false
 "owns_student":
 { Args: { "s": string }; Returns: boolean
                            },
+"purchase_options":
+{ Args: { "p_student": string }; Returns: Json
+                           },
 "record_checkin":
 { Args: { "p_barcode": string,"p_branch": string,"p_class_session": string,"p_client_uuid": string,"p_method"?: Database["public"]['Enums']["attendance_method"],"p_reason"?: string,"p_scanned_at": string,"p_source"?: Database["public"]['Enums']["attendance_source"] }; Returns: Json
                            },
 "reject_registration":
 { Args: { "p_reason": string,"p_registration": string }; Returns: Json
+                           },
+"request_package_purchase":
+{ Args: { "p_method": Database["public"]['Enums']["payment_method"],"p_slip_path": string,"p_student": string,"p_template": string,"p_with_membership": boolean }; Returns: Json
+                           },
+"review_order":
+{ Args: { "p_approve": boolean,"p_order": string,"p_reason": string }; Returns: Json
                            },
 "sell_package":
 { Args: { "p_method": Database["public"]['Enums']["payment_method"],"p_student": string,"p_template": string,"p_with_membership": boolean }; Returns: Json
