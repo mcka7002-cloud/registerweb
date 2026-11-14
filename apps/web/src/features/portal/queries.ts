@@ -36,6 +36,15 @@ export interface PortalStudent {
   packages: PortalPackage[];
   bookings: PortalSession[];
   attendances: PortalAttendance[];
+  /** Slip purchase waiting for a teacher, or the latest one rejected in the last 7 days. */
+  order: PortalOrder | null;
+}
+
+export interface PortalOrder {
+  status: "pending_review" | "rejected";
+  total: number;
+  createdAt: string;
+  rejectReason: string | null;
 }
 
 /** Students linked to this account (student_accounts, RLS-scoped) with packages, upcoming bookings and recent attendance. */
@@ -51,7 +60,8 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
   if (ids.length === 0) return [];
 
   const today = todayInBangkok();
-  const [studentsRes, packagesRes, bookingsRes, attendanceLists] = await Promise.all([
+  const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
+  const [studentsRes, packagesRes, bookingsRes, attendanceLists, ordersRes] = await Promise.all([
     supabase
       .from("students")
       .select("id, code, first_name, last_name, nickname, membership_expires_on, belt_ranks(name_th), branches(name)")
@@ -80,7 +90,15 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
           .limit(10),
       ),
     ),
+    supabase
+      .from("orders")
+      .select("id, status, total, created_at, reject_reason, order_items!inner(student_id)")
+      .eq("account_id", accountId)
+      .in("order_items.student_id", ids)
+      .or(`status.eq.pending_review,and(status.eq.rejected,created_at.gte.${weekAgo})`)
+      .order("created_at", { ascending: false }),
   ]);
+  if (ordersRes.error) console.error("[loadPortal] orders", ordersRes.error);
   if (studentsRes.error) console.error("[loadPortal] students", studentsRes.error);
   if (packagesRes.error) console.error("[loadPortal] student_packages", packagesRes.error);
   if (bookingsRes.error) console.error("[loadPortal] bookings", bookingsRes.error);
@@ -122,5 +140,27 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
         isTrial: a.is_trial,
         manual: a.method === "manual",
       })),
+    order: pickOrder(ordersRes.data ?? [], s.id),
   }));
+}
+
+type OrderRow = {
+  status: string;
+  total: number;
+  created_at: string;
+  reject_reason: string | null;
+  order_items: { student_id: string | null }[];
+};
+
+/** A pending order wins over a rejected one; rows arrive newest first. */
+function pickOrder(rows: OrderRow[], studentId: string): PortalOrder | null {
+  const mine = rows.filter((o) => o.order_items.some((i) => i.student_id === studentId));
+  const o = mine.find((r) => r.status === "pending_review") ?? mine.find((r) => r.status === "rejected");
+  if (!o) return null;
+  return {
+    status: o.status as PortalOrder["status"],
+    total: Number(o.total),
+    createdAt: o.created_at,
+    rejectReason: o.reject_reason,
+  };
 }

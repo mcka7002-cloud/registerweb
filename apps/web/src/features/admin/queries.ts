@@ -10,13 +10,15 @@ export interface BranchRow {
   vat_enabled: boolean;
   vat_inclusive: boolean;
   vat_rate: number;
+  promptpay_id: string | null;
+  bank_account: string | null;
 }
 
 export async function listBranches(): Promise<BranchRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("branches")
-    .select("id, code, name, address, tax_id, branch_settings(vat_enabled, vat_inclusive, vat_rate)")
+    .select("id, code, name, address, tax_id, branch_settings(vat_enabled, vat_inclusive, vat_rate, promptpay_id, bank_account)")
     .order("code");
   if (error) console.error("[listBranches]", error);
   return (data ?? []).map((b) => {
@@ -30,6 +32,8 @@ export async function listBranches(): Promise<BranchRow[]> {
       vat_enabled: s?.vat_enabled ?? false,
       vat_inclusive: s?.vat_inclusive ?? true,
       vat_rate: Number(s?.vat_rate ?? 7),
+      promptpay_id: s?.promptpay_id ?? null,
+      bank_account: s?.bank_account ?? null,
     };
   });
 }
