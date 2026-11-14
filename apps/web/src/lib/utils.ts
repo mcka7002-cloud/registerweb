@@ -33,6 +33,8 @@ export const ERROR_CODES = [
   "NOT_BOOKED",
   "SESSION_UNAVAILABLE",
   "FIELDS_REQUIRED",
+  "SLIP_REQUIRED",
+  "ORDER_PENDING",
   "UNKNOWN",
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

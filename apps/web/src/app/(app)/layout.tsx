@@ -13,6 +13,7 @@ type NavKey =
   | "staff"
   | "registrations"
   | "students"
+  | "payments"
   | "kiosk"
   | "portal"
   | "register";
@@ -21,6 +22,7 @@ const STAFF_NAV: [string, NavKey][] = [
   ["/staff", "staff"],
   ["/staff/registrations", "registrations"],
   ["/staff/students", "students"],
+  ["/staff/payments", "payments"],
 ];
 
 const NAV_BY_ROLE: Partial<Record<Role, [string, NavKey][]>> = {
