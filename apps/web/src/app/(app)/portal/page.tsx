@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StudentCard } from "@/features/portal/components/student-card";
 import { loadPortal } from "@/features/portal/queries";
+import { StudentPhoto } from "@/features/students/components/student-photo";
 import { listMyRegistrations } from "@/features/register/queries";
 import { requireRole } from "@/lib/auth";
 import { formatThaiDate, todayInBangkok } from "@/lib/utils";
@@ -59,7 +60,13 @@ export default async function PortalPage() {
           action={registerButton}
         />
       ) : (
-        students.map((s) => <StudentCard key={s.id} student={s} />)
+        students.map((s) => (
+          <StudentCard
+            key={s.id}
+            student={s}
+            photo={<StudentPhoto path={s.photoPath} alt={s.fullName} className="size-16 shrink-0" />}
+          />
+        ))
       )}
     </div>
   );

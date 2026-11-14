@@ -13,7 +13,9 @@ workstream. Architecture rules come from [ADR 0001](../adr/0001-stack-and-archit
 6. Kiosk: online check-in by scanner or typed code → sessions left goes down by one.
 7. The parent's portal shows the student's package, sessions left and attendance.
 
-**Out of MVP1:** offline kiosk, payroll, exams, stock, slip upload, promotions, reports/Excel, public site
+**Thai test flow and demo script:** [demo-th.md](demo-th.md) (includes the review fixes below).
+
+**Out of MVP1:** offline kiosk, payroll, exams, stock, promotions, reports/Excel, public site
 (`apps/site` is not deployed), LINE, English UI, PDF documents.
 
 ## Workstreams and file ownership

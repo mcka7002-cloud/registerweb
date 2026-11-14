@@ -27,6 +27,14 @@ publishing anything.
   Card text uses IBM Plex Sans Thai (column titles are SemiBold; load it before editing them).
 - Figma changes follow the plan-first rule like any other change.
 
+## Every MVP ships with
+
+- Thai UI text (next-intl `messages/th`), no leftover English on screen.
+- A Thai test flow and demo script: `docs/mvp<N>/demo-th.md` (steps, who, what to do, what to see).
+- Mock data for testing: local `supabase/seed.sql` and a cloud-safe script (no passwords) like
+  `supabase/demo/cloud_demo.sql`, both updated for every new flow.
+- The "done" check runs that demo script end to end.
+
 ## Big tasks: split to sub-agents, then review the whole
 
 - When a task is too big for one pass, write the contract first (files each part owns, interfaces, done

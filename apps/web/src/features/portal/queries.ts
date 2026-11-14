@@ -33,6 +33,7 @@ export interface PortalStudent {
   beltName: string | null;
   branchName: string | null;
   membershipExpiresOn: string | null;
+  photoPath: string | null;
   packages: PortalPackage[];
   bookings: PortalSession[];
   attendances: PortalAttendance[];
@@ -64,7 +65,7 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
   const [studentsRes, packagesRes, bookingsRes, attendanceLists, ordersRes] = await Promise.all([
     supabase
       .from("students")
-      .select("id, code, first_name, last_name, nickname, membership_expires_on, belt_ranks(name_th), branches(name)")
+      .select("id, code, first_name, last_name, nickname, membership_expires_on, photo_path, belt_ranks(name_th), branches(name)")
       .in("id", ids)
       .order("code"),
     supabase
@@ -112,6 +113,7 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
     beltName: s.belt_ranks?.name_th ?? null,
     branchName: s.branches?.name ?? null,
     membershipExpiresOn: s.membership_expires_on,
+    photoPath: s.photo_path,
     packages: (packagesRes.data ?? [])
       .filter((p) => p.student_id === s.id)
       .map((p) => ({
