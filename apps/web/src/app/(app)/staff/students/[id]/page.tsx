@@ -12,6 +12,7 @@ import { listUpcomingBookings, listUpcomingSessions, type SessionOption } from "
 import { SellPackageDialog } from "@/features/sales/components/sell-package-dialog";
 import { getSaleContext } from "@/features/sales/queries";
 import { EditStudentDialog } from "@/features/students/components/edit-student-dialog";
+import { getStudentPhotoPath, StudentPhoto } from "@/features/students/components/student-photo";
 import { getStudent, listStudentPackages } from "@/features/students/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { formatThaiDate, todayInBangkok } from "@/lib/utils";
@@ -41,10 +42,11 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
   }
 
   const today = todayInBangkok();
-  const [packages, bookings, saleContext] = await Promise.all([
+  const [packages, bookings, saleContext, photoPath] = await Promise.all([
     listStudentPackages(student.id),
     listUpcomingBookings(student.id, today),
     getSaleContext(student.branch_id),
+    getStudentPhotoPath(student.id),
   ]);
 
   const activePackages = packages.filter((p) => p.status === "active");
@@ -101,6 +103,7 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
             <CardTitle>{t("detail.profile")}</CardTitle>
           </CardHeader>
           <CardContent>
+            <StudentPhoto path={photoPath} alt={`${student.first_name} ${student.last_name}`} className="mb-4" />
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted-foreground">{t("detail.branch")}</dt>
               <dd>{student.branch?.name}</dd>
