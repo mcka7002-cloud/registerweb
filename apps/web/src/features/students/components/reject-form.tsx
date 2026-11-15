@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +41,7 @@ export function RejectForm({ registrationId }: { registrationId: string }) {
         />
       </div>
       <Button type="submit" variant="destructive" disabled={pending || reason.trim() === ""} className="justify-self-start">
-        {t("reject")}
+        <X /> {t("reject")}
       </Button>
     </form>
   );

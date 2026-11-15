@@ -118,7 +118,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button asChild>
+          <Button asChild className="h-11 w-full sm:h-9 sm:w-auto">
             <Link href={`/portal/buy/${s.id}`}>
               <ShoppingCart /> {t("buy")}
             </Link>
@@ -126,7 +126,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
         </div>
 
         <details className="group rounded-md border">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 min-h-11 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
             {t("details")}
             <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
           </summary>

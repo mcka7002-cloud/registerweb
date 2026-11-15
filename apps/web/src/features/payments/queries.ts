@@ -207,3 +207,26 @@ export async function getTodayTakings(): Promise<TodayTakings> {
 
   return { payments, byMethod, grandTotal };
 }
+
+// ---------- parent: what a pending order holds ----------
+
+export interface MyOrderSummary {
+  method: PaymentMethod | null;
+  items: { description: string; amount: number }[];
+}
+
+/** The caller's own order (RLS: orders_own / order_items_read): its lines and payment method. */
+export async function getMyOrderSummary(orderId: string): Promise<MyOrderSummary | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("orders")
+    .select("pay_method, order_items(description, amount)")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (error) console.error("[getMyOrderSummary]", error);
+  if (!data) return null;
+  return {
+    method: data.pay_method,
+    items: (data.order_items ?? []).map((i) => ({ description: i.description, amount: Number(i.amount) })),
+  };
+}

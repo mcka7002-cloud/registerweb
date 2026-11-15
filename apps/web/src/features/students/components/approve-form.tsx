@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus, Trash2 } from "lucide-react";
+import { Check, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -152,7 +152,7 @@ export function ApproveForm({ registrationId, payload }: { registrationId: strin
       </fieldset>
 
       <Button type="submit" disabled={pending} className="justify-self-start">
-        {t("review.approve")}
+        <Check /> {t("review.approve")}
       </Button>
     </form>
   );

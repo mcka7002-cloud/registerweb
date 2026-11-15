@@ -7,7 +7,7 @@ export async function SignOutButton({ className }: { className?: string }) {
   const t = await getTranslations("auth");
   return (
     <form action="/auth/signout" method="post" className={className}>
-      <Button type="submit" variant="outline" size="sm">
+      <Button type="submit" variant="outline" size="sm" className="size-11 sm:h-8 sm:w-auto">
         <LogOut />
         <span className="hidden sm:inline">{t("signOut")}</span>
         <span className="sr-only sm:hidden">{t("signOut")}</span>

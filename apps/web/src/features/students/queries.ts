@@ -108,6 +108,7 @@ export interface StudentListRow {
   status: string;
   membership_expires_on: string | null;
   branch: string;
+  photo_path: string | null;
 }
 
 /** Search by Thai/English name, nickname or code (RLS keeps it to my branches). */
@@ -115,7 +116,7 @@ export async function searchStudents(q: string): Promise<StudentListRow[]> {
   const supabase = await createClient();
   let query = supabase
     .from("students")
-    .select("id, code, first_name, last_name, nickname, status, membership_expires_on, branches(code)")
+    .select("id, code, first_name, last_name, nickname, status, membership_expires_on, photo_path, branches(code)")
     .is("anonymized_at", null)
     .order("code")
     .limit(50);
@@ -140,6 +141,7 @@ export async function searchStudents(q: string): Promise<StudentListRow[]> {
     status: s.status,
     membership_expires_on: s.membership_expires_on,
     branch: one(s.branches)?.code ?? "",
+    photo_path: s.photo_path,
   }));
 }
 
