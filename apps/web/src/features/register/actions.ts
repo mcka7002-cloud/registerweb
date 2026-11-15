@@ -4,9 +4,16 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import type { Json } from "@/lib/database.types";
 import { createClient } from "@/lib/supabase/server";
-import { registrationSchema, type RegisterResult, type RegistrationField } from "./schema";
+import {
+  PHOTO_MAX_BYTES,
+  PHOTO_TYPES,
+  photoType,
+  registrationSchema,
+  type RegisterResult,
+  type RegistrationField,
+} from "./schema";
 
-const KEYS = Object.keys(registrationSchema.shape) as RegistrationField[];
+const KEYS = Object.keys(registrationSchema.shape) as (keyof typeof registrationSchema.shape)[];
 
 /** Inserts a pending registration for the signed-in account (RLS policy `registrations_insert`). */
 export async function submitRegistration(_prev: RegisterResult | null, formData: FormData): Promise<RegisterResult> {
@@ -19,12 +26,36 @@ export async function submitRegistration(_prev: RegisterResult | null, formData:
     else if (key !== "publish_consent" && key !== "pdpa_consent") raw[key] = "";
   }
 
+  // An empty file input arrives as a File with size 0: treat it as "no photo".
+  const photoEntry = formData.get("photo");
+  const photo = photoEntry instanceof File && photoEntry.size > 0 ? photoEntry : null;
+  const photoMime = photo ? photoType(photo) : null;
+  const photoInvalid = photo != null && (photoMime == null || photo.size > PHOTO_MAX_BYTES);
+
   const parsed = registrationSchema.safeParse(raw);
-  if (!parsed.success) {
-    const fields = [...new Set(parsed.error.issues.map((i) => i.path[0] as RegistrationField))];
+  if (!parsed.success || photoInvalid) {
+    const fields: RegistrationField[] = parsed.success
+      ? []
+      : [...new Set(parsed.error.issues.map((i) => i.path[0] as RegistrationField))];
+    if (photoInvalid) fields.push("photo");
     return { ok: false, code: "INVALID_INPUT", fields };
   }
   const f = parsed.data;
+  const supabase = await createClient();
+
+  // Upload first; the path must sit in the applicant's own folder (storage policy storage_own_upload).
+  let photo_path: string | null = null;
+  if (photo && photoMime) {
+    const path = `${me.id}/${crypto.randomUUID()}.${PHOTO_TYPES[photoMime]}`;
+    const { error: uploadError } = await supabase.storage
+      .from("student-photos")
+      .upload(path, photo, { contentType: photoMime, upsert: false });
+    if (uploadError) {
+      console.error("[submitRegistration] photo upload failed", uploadError);
+      return { ok: false, code: "UPLOAD_FAILED", fields: ["photo"] };
+    }
+    photo_path = path;
+  }
 
   // Keys match what approve_registration reads from payload.
   const payload = {
@@ -37,6 +68,7 @@ export async function submitRegistration(_prev: RegisterResult | null, formData:
     gender: f.gender,
     height_cm: f.height_cm,
     medical_notes: f.medical_notes,
+    photo_path,
     guardians: [
       {
         full_name: f.guardian_name,
@@ -46,7 +78,6 @@ export async function submitRegistration(_prev: RegisterResult | null, formData:
     ],
   } satisfies Json;
 
-  const supabase = await createClient();
   const { data, error } = await supabase
     .from("registrations")
     .insert({

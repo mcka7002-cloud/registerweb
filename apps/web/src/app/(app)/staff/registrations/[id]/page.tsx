@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApproveForm } from "@/features/students/components/approve-form";
 import { RejectForm } from "@/features/students/components/reject-form";
+import { StudentPhoto } from "@/features/students/components/student-photo";
 import { formatThaiDateTime } from "@/features/students/format";
 import { getRegistration, type Guardian } from "@/features/students/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
@@ -36,7 +37,8 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
   }
 
   const open = reg.status === "pending" || reg.status === "trial_booked";
-  const { guardians, ...fields } = reg.payload;
+  const { guardians, photo_path, ...fields } = reg.payload;
+  const fullName = [reg.payload.first_name, reg.payload.last_name].filter(Boolean).join(" ");
   const label = (k: string) => (t.has(`fields.${k}`) ? t(`fields.${k}`) : k);
   const show = (v: unknown) => (v == null || v === "" ? "–" : typeof v === "object" ? JSON.stringify(v) : String(v));
 
@@ -81,6 +83,11 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
               <CardTitle>{t("review.payload")}</CardTitle>
             </CardHeader>
             <CardContent>
+              <StudentPhoto
+                path={typeof photo_path === "string" ? photo_path : null}
+                alt={fullName}
+                className="mb-4"
+              />
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
                 {Object.entries(fields).map(([k, v]) => (
                   <div key={k} className="contents">

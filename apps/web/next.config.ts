@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   // Monorepo root (pnpm workspace), so file tracing does not guess from other lockfiles.
   outputFileTracingRoot: path.join(__dirname, "../.."),
   transpilePackages: ["@registerweb/domain"],
+  // รูปผู้เรียนและสลิปส่งผ่าน server action (ไฟล์ละไม่เกิน 5 MB) ค่าเริ่มต้นของ Next คือ 1 MB
+  experimental: { serverActions: { bodySizeLimit: "6mb" } },
   images: {
     // รูปนักเรียนและสลิปเก็บใน Supabase Storage (bucket private, ใช้ signed URL)
     remotePatterns: [{ protocol: "https", hostname: "*.supabase.co" }],

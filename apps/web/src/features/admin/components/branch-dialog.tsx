@@ -28,6 +28,8 @@ const EMPTY: BranchRow = {
   vat_enabled: false,
   vat_inclusive: true,
   vat_rate: 7,
+  promptpay_id: "",
+  bank_account: "",
 };
 
 /** Create (no `branch`) or edit a branch and its VAT settings. */
@@ -58,6 +60,8 @@ export function BranchDialog({ branch, trigger }: { branch?: BranchRow; trigger:
           vat_enabled: form.vat_enabled,
           vat_inclusive: form.vat_inclusive,
           vat_rate: Number(form.vat_rate),
+          promptpay_id: form.promptpay_id ?? "",
+          bank_account: form.bank_account ?? "",
         }),
       () => {
         toast.success(tc("status.saved"));
@@ -114,6 +118,28 @@ export function BranchDialog({ branch, trigger }: { branch?: BranchRow; trigger:
                 disabled={!form.vat_enabled}
                 value={form.vat_rate}
                 onChange={(e) => set("vat_rate", Number(e.target.value))}
+              />
+            </div>
+          </fieldset>
+          <fieldset className="grid gap-3 rounded-md border p-3">
+            <legend className="px-1 text-sm font-medium">{t("payment")}</legend>
+            <div className="grid gap-2">
+              <Label htmlFor="b-promptpay">{t("promptpayId")}</Label>
+              <Input
+                id="b-promptpay"
+                inputMode="numeric"
+                value={form.promptpay_id ?? ""}
+                onChange={(e) => set("promptpay_id", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">{t("promptpayHint")}</p>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="b-bank">{t("bankAccount")}</Label>
+              <Input
+                id="b-bank"
+                placeholder={t("bankAccountPlaceholder")}
+                value={form.bank_account ?? ""}
+                onChange={(e) => set("bank_account", e.target.value)}
               />
             </div>
           </fieldset>

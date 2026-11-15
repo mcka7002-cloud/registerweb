@@ -11,7 +11,7 @@ import { listBranchOptions, listUsers } from "@/features/admin/queries";
 import { requireRole } from "@/lib/auth";
 
 export default async function UsersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   const { q = "" } = await searchParams;
   const [t, tc, users, branches] = await Promise.all([
     getTranslations("admin.users"),
@@ -59,10 +59,14 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                       <Badge variant={u.role === "customer" ? "outline" : "secondary"}>{tc(`roles.${u.role}`)}</Badge>
                     </TableCell>
                     <TableCell>
-                      {u.branch_ids.length === 0 ? t("noBranches") : u.branch_ids.map(codeOf).join(", ")}
+                      {u.role === "admin"
+                        ? t("allBranchesShort")
+                        : u.branch_ids.length === 0
+                          ? t("noBranches")
+                          : u.branch_ids.map(codeOf).join(", ")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <UserAccessDialog user={u} branches={branches} />
+                      <UserAccessDialog user={u} branches={branches} isSelf={u.id === me.id} />
                     </TableCell>
                   </TableRow>
                 ))}

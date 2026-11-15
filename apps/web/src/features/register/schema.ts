@@ -44,9 +44,28 @@ export const registrationSchema = z.object({
   publish_consent: z.literal("on").optional(),
 });
 
-export type RegistrationField = keyof typeof registrationSchema.shape;
+/** Optional student photo (a File entry, checked separately from the string fields). Matches bucket `student-photos`. */
+export const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+export const PHOTO_TYPES = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/heic": "heic",
+} as const;
+export type PhotoType = keyof typeof PHOTO_TYPES;
+export const PHOTO_ACCEPT = [...Object.keys(PHOTO_TYPES), ".heic"].join(",");
+
+/** MIME type of an allowed photo, or null. Some browsers send HEIC with an empty type, so fall back to the name. */
+export function photoType(file: { type: string; name: string }): PhotoType | null {
+  if (file.type in PHOTO_TYPES) return file.type as PhotoType;
+  if (file.type === "" && /\.heic$/i.test(file.name)) return "image/heic";
+  return null;
+}
+
+export type RegistrationField = keyof typeof registrationSchema.shape | "photo";
 
 export type RegisterResult =
   | { ok: true; data: { id: string } }
   | { ok: false; code: "INVALID_INPUT"; fields: RegistrationField[] }
+  | { ok: false; code: "UPLOAD_FAILED"; fields: ["photo"] }
   | { ok: false; code: string; fields?: undefined };

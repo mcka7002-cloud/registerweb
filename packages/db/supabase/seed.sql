@@ -6,8 +6,9 @@
 -- ---------- สาขา ----------
 insert into public.branches (id, code, name, address) values
   ('11111111-0000-0000-0000-000000000001', 'BKK', 'สาขาหลัก', 'กรุงเทพมหานคร');
-insert into public.branch_settings (branch_id, vat_enabled, vat_inclusive, vat_rate) values
-  ('11111111-0000-0000-0000-000000000001', true, true, 7);
+-- ช่องทางชำระเงินเดโม: เลขพร้อมเพย์ 0000000000 ไม่ใช่บัญชีจริง ห้ามโอนเงินจริง
+insert into public.branch_settings (branch_id, vat_enabled, vat_inclusive, vat_rate, promptpay_id, bank_account) values
+  ('11111111-0000-0000-0000-000000000001', true, true, 7, '0000000000', 'บัญชีเดโม (ไม่ใช่บัญชีจริง) ธนาคารตัวอย่าง 000-0-00000-0');
 
 -- ตารางคลาสประจำสัปดาห์: จ./พ./ศ. 17:00–18:00 · ส. 10:00–11:00 (0 = อาทิตย์)
 insert into public.class_schedules (branch_id, weekday, starts_at, ends_at, capacity) values

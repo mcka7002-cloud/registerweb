@@ -26,6 +26,14 @@ const branchSchema = z.object({
   vat_enabled: z.boolean(),
   vat_inclusive: z.boolean(),
   vat_rate: z.number().min(0).max(100),
+  // PromptPay: mobile number (10 digits) or tax id (13 digits), digits only
+  promptpay_id: z
+    .string()
+    .trim()
+    .transform((v) => v.replace(/[\s-]/g, ""))
+    .refine((v) => v === "" || /^(\d{10}|\d{13})$/.test(v))
+    .transform((v) => v || null),
+  bank_account: optText,
 });
 export type BranchInput = z.input<typeof branchSchema>;
 
@@ -33,7 +41,7 @@ export async function saveBranch(input: BranchInput): Promise<RpcResult<{ id: st
   await requireRole("admin");
   const parsed = branchSchema.safeParse(input);
   if (!parsed.success) return INVALID_INPUT;
-  const { id, vat_enabled, vat_inclusive, vat_rate, ...branch } = parsed.data;
+  const { id, vat_enabled, vat_inclusive, vat_rate, promptpay_id, bank_account, ...branch } = parsed.data;
   const supabase = await createClient();
 
   let branchId = id;
@@ -48,7 +56,15 @@ export async function saveBranch(input: BranchInput): Promise<RpcResult<{ id: st
 
   const { error } = await supabase
     .from("branch_settings")
-    .upsert({ branch_id: branchId, vat_enabled, vat_inclusive, vat_rate, updated_at: new Date().toISOString() });
+    .upsert({
+      branch_id: branchId,
+      vat_enabled,
+      vat_inclusive,
+      vat_rate,
+      promptpay_id,
+      bank_account,
+      updated_at: new Date().toISOString(),
+    });
   revalidatePath("/admin/branches");
   return writeResult(error, { id: branchId });
 }
@@ -167,6 +183,7 @@ export async function saveMembershipPrices(input: MembershipPriceInput): Promise
 }
 
 // ---------- profiles.role + profile_branches ----------
+const BRANCH_ROLES: string[] = ["teacher", "branch_manager", "kiosk"];
 const userSchema = z.object({
   profile_id: uuid,
   role: z.enum(["admin", "branch_manager", "teacher", "customer", "kiosk"]),
@@ -178,9 +195,11 @@ export async function saveUserAccess(input: UserAccessInput): Promise<RpcResult<
   const me = await requireRole("admin");
   const parsed = userSchema.safeParse(input);
   if (!parsed.success) return INVALID_INPUT;
-  const { profile_id, role, branch_ids } = parsed.data;
-  // Guard against locking yourself out of the admin pages.
-  if (profile_id === me.id && role !== "admin") return { ok: false, code: "SELF_ROLE" };
+  const { profile_id, role } = parsed.data;
+  // Nobody changes their own role (the database trigger enforces it too).
+  if (profile_id === me.id && role !== me.role) return { ok: false, code: "FORBIDDEN" };
+  // Only teachers, branch managers and kiosks are tied to branches; admins see all, customers none.
+  const branch_ids = BRANCH_ROLES.includes(role) ? parsed.data.branch_ids : [];
 
   const supabase = await createClient();
   const { error: roleError } = await supabase.from("profiles").update({ role }).eq("id", profile_id);

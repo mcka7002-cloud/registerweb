@@ -23,12 +23,16 @@ import { useRunAction } from "../use-run-action";
 import { CheckboxField } from "./checkbox-field";
 
 const ROLES: Role[] = ["admin", "branch_manager", "teacher", "customer", "kiosk"];
+/** Roles that work in specific branches; admins see every branch and customers none. */
+const BRANCH_ROLES: Role[] = ["teacher", "branch_manager", "kiosk"];
 
 export function UserAccessDialog({
   user,
   branches,
+  isSelf,
 }: {
   user: UserRow;
+  isSelf: boolean;
   branches: { id: string; code: string; name: string }[];
 }) {
   const t = useTranslations("admin.users");
@@ -53,7 +57,12 @@ export function UserAccessDialog({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     run(
-      () => saveUserAccess({ profile_id: user.id, role, branch_ids: branchIds }),
+      () =>
+        saveUserAccess({
+          profile_id: user.id,
+          role,
+          branch_ids: BRANCH_ROLES.includes(role) ? branchIds : [],
+        }),
       () => {
         toast.success(tc("status.saved"));
         setOpen(false);
@@ -78,7 +87,7 @@ export function UserAccessDialog({
           </DialogHeader>
           <div className="grid gap-2">
             <Label>{t("role")}</Label>
-            <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+            <Select value={role} onValueChange={(v) => setRole(v as Role)} disabled={isSelf}>
               <SelectTrigger className="w-full" aria-label={t("role")}>
                 <SelectValue />
               </SelectTrigger>
@@ -90,20 +99,27 @@ export function UserAccessDialog({
                 ))}
               </SelectContent>
             </Select>
+            {isSelf ? <p className="text-xs text-muted-foreground">{t("selfRoleHint")}</p> : null}
           </div>
-          <fieldset className="grid gap-2">
-            <legend className="mb-2 text-sm font-medium">{t("branches")}</legend>
-            {branches.map((b) => (
-              <CheckboxField
-                key={b.id}
-                id={`u-${user.id}-${b.id}`}
-                label={`${b.code} · ${b.name}`}
-                checked={branchIds.includes(b.id)}
-                onChange={(on) => toggle(b.id, on)}
-              />
-            ))}
-            <p className="text-xs text-muted-foreground">{t("branchesHint")}</p>
-          </fieldset>
+          {BRANCH_ROLES.includes(role) ? (
+            <fieldset className="grid gap-2">
+              <legend className="mb-2 text-sm font-medium">{t("branches")}</legend>
+              {branches.map((b) => (
+                <CheckboxField
+                  key={b.id}
+                  id={`u-${user.id}-${b.id}`}
+                  label={`${b.code} · ${b.name}`}
+                  checked={branchIds.includes(b.id)}
+                  onChange={(on) => toggle(b.id, on)}
+                />
+              ))}
+              <p className="text-xs text-muted-foreground">{t("branchesHint")}</p>
+            </fieldset>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t(role === "admin" ? "allBranches" : "customerNoBranches")}
+            </p>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               {tc("actions.cancel")}

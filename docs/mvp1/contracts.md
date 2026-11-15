@@ -13,7 +13,9 @@ workstream. Architecture rules come from [ADR 0001](../adr/0001-stack-and-archit
 6. Kiosk: online check-in by scanner or typed code → sessions left goes down by one.
 7. The parent's portal shows the student's package, sessions left and attendance.
 
-**Out of MVP1:** offline kiosk, payroll, exams, stock, slip upload, promotions, reports/Excel, public site
+**Thai test flow and demo script:** [demo-th.md](demo-th.md) (includes the review fixes below).
+
+**Out of MVP1:** offline kiosk, payroll, exams, stock, promotions, reports/Excel, public site
 (`apps/site` is not deployed), LINE, English UI, PDF documents.
 
 ## Workstreams and file ownership
@@ -174,3 +176,42 @@ export async function callRpc<T>(fn: string, args: Record<string, unknown>): Pro
 - WS A: `DATABASE_URL="postgresql:///postgres?host=/tmp" pnpm db:test` with new SQL tests for every function
   and every fix above.
 - Report: files changed, commands run with results, anything not done, requests for other workstreams.
+
+## MVP1 review fixes (2026-11-15)
+
+From the review doc "RegisterWeb MVP1 Review". Database is done in
+`20261115000001_mvp1_review_fixes.sql` (tests: `review_fixes_test.sql`); `database.types.ts` is regenerated.
+
+### Database contract (done)
+- Storage, private buckets `slips` and `student-photos` (5 MB, jpeg/png/webp/heic). Upload only to
+  `<auth.uid()>/<random uuid>.<ext>`; no update/delete. Read: the uploader; staff of the branch for a slip on an
+  order (`orders.slip_path = name`) or a photo on a registration (`payload.photo_path`) or a student
+  (`students.photo_path`); a linked customer for their student's photo. Show files with
+  `storage.from(bucket).createSignedUrl(path, 600)` on the server.
+- `registrations.payload.photo_path`: set by the register form. `approve_registration` copies it to
+  `students.photo_path` (only when it is in the applicant's own folder).
+- `purchase_options(p_student) → {student{id,code,name,nickname,membership_expires_on}, membership_required,
+  membership_kind 'new'|'renewal', membership_price, vat{enabled,inclusive,rate}, payment{promptpay_id,
+  bank_account}, templates[{id,name,price,sessions,duration_days}], pending_order{id,total,created_at}|null}`.
+  Linked customer or staff of the branch.
+- `request_package_purchase(p_student, p_template, p_with_membership, p_method 'transfer'|'promptpay',
+  p_slip_path) → {order_id, total}`. Customer only. Errors: FORBIDDEN, SLIP_REQUIRED, ORDER_PENDING,
+  MEMBERSHIP_REQUIRED, TEMPLATE_INACTIVE. Creates `orders.status = 'pending_review'` with items; no money yet.
+- `review_order(p_order, p_approve, p_reason) → {order_id, document_id, doc_no, total}` (approve) or `{}`
+  (reject). Staff of the branch. Errors: FORBIDDEN, NOT_PENDING, REASON_REQUIRED. Approve records the payment
+  (received_by = me), membership, package and receipt exactly like `sell_package`.
+- `payments`: a teacher reads rows where `received_by = auth.uid()`; managers/admin read the branch.
+- `branch_settings.promptpay_id`, `branch_settings.bank_account`: admin direct write (config table).
+- Trigger: nobody can change their own `profiles.role` (FORBIDDEN).
+
+### Web parts and file ownership
+| Part | Owner | Files |
+|---|---|---|
+| Shared: nav `payments`, error codes SLIP_REQUIRED / ORDER_PENDING | lead (done) | `(app)/layout.tsx`, `lib/utils.ts`, `messages/th/common.json` |
+| #1 #2 users dialog, #6 #7 #8 portal, branch payment settings | lead | `features/admin/**`, `features/portal/**`, `(app)/portal/page.tsx`, `(app)/admin/**`, `messages/th/{admin,portal}.json` |
+| #4 photo upload | sub-agent P | `features/register/**`, `(app)/register/**`, `messages/th/register.json`, `features/students/components/student-photo.tsx` (new), `(app)/staff/registrations/[id]/page.tsx`, `(app)/staff/students/[id]/page.tsx` (photo block only) |
+| #3 #5 #9 slip purchase + payment review | sub-agent Q | `features/payments/**` (new), `(app)/portal/buy/[studentId]/page.tsx` (new), `(app)/staff/payments/page.tsx` (new), `messages/th/payments.json` (new) + its registration in `src/i18n` |
+
+- Route for the lead's portal card: the "ซื้อแพ็กเกจ / ต่อสมาชิก" button links to `/portal/buy/<student id>`.
+- PromptPay QR: `promptpay-qr` builds the payload (with the amount) and `qrcode` renders it on the server as
+  an SVG/data URL. Only sub-agent Q adds these dependencies.
