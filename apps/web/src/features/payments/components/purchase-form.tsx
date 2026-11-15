@@ -193,7 +193,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
                 <label
                   key={m}
                   className={cn(
-                    "flex h-11 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
+                    "relative flex h-11 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
                     m === method ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -250,7 +250,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
         <CardContent className="grid gap-3">
           <label
             htmlFor="buy-slip"
-            className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-6 text-center text-sm hover:bg-muted/50 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50"
+            className="relative flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-6 text-center text-sm hover:bg-muted/50 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50"
           >
             <Upload className="size-6 text-muted-foreground" aria-hidden />
             <span className="font-medium">{slip ? t("slipChange") : t("slipPick")}</span>

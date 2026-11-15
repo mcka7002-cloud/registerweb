@@ -38,7 +38,9 @@
     "method": "ชำระโดย",
     "methods": {
       "promptpay": "พร้อมเพย์",
-      "transfer": "โอนเข้าบัญชี"
+      "transfer": "โอนเข้าบัญชี",
+      "cash": "เงินสด",
+      "slip": "แนบสลิป"
     },
     "slip": "แนบสลิป",
     "slipHint": "รูปภาพ (JPG, PNG, WEBP, HEIC) ไม่เกิน 5 MB",

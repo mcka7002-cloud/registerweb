@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { addDays } from "@registerweb/domain";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +12,6 @@ import { signStudentPhotos, StudentThumb } from "@/features/students/components/
 import { searchStudents } from "@/features/students/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { formatThaiDate, todayInBangkok } from "@/lib/utils";
-
-function addDays(isoDate: string, days: number): string {
-  const d = new Date(isoDate + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 export default async function StudentsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireRole(...STAFF_ROLES);

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, ChevronDown, Clock, ShoppingCart, XCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { addDays } from "@registerweb/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +10,6 @@ import type { PortalStudent } from "../queries";
 
 const hhmm = (time: string) => time.slice(0, 5);
 const longDate = { weekday: "short", day: "numeric", month: "short", year: "numeric" } as const;
-
-function addDays(isoDate: string, days: number): string {
-  const d = new Date(isoDate + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

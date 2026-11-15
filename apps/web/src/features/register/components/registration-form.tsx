@@ -120,7 +120,7 @@ function PhotoField({
   return (
     <div className="flex flex-col gap-1.5 sm:col-span-2">
       <Label htmlFor="reg-photo">{t("fields.photo")}</Label>
-      <div className="flex items-center gap-4 rounded-lg border p-4">
+      <div className={cn("flex items-center gap-4 rounded-lg border p-4", showError && "border-destructive")}>
         <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground">
           {preview && !previewFailed ? (
             // eslint-disable-next-line @next/next/no-img-element -- local blob preview
@@ -136,7 +136,10 @@ function PhotoField({
           <div className="flex flex-wrap gap-2">
             <label
               htmlFor="reg-photo"
-              className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md border px-4 text-sm font-medium hover:bg-accent has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 sm:h-9"
+              className={cn(
+                "relative inline-flex h-11 cursor-pointer items-center justify-center rounded-md border px-4 text-sm font-medium hover:bg-accent has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 sm:h-9",
+                showError && "border-destructive text-destructive",
+              )}
             >
               {fileName ? t("photo.change") : t("photo.pick")}
               <input

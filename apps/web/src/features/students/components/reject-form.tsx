@@ -40,7 +40,7 @@ export function RejectForm({ registrationId }: { registrationId: string }) {
           onChange={(e) => setReason(e.target.value)}
         />
       </div>
-      <Button type="submit" variant="destructive" disabled={pending || reason.trim() === ""} className="justify-self-start">
+      <Button type="submit" variant="destructive-soft" disabled={pending || reason.trim() === ""} className="justify-self-start">
         <X /> {t("reject")}
       </Button>
     </form>

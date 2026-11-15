@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PurchaseForm } from "@/features/payments/components/purchase-form";
 import { promptPayQrDataUrl } from "@/features/payments/qr";
-import { getMyOrderSummary, getPurchaseOptions } from "@/features/payments/queries";
+import { getPurchaseOptions } from "@/features/payments/queries";
 import { amountKey, previewTotal } from "@/features/payments/shared";
 import { requireRole } from "@/lib/auth";
 import { formatBaht, formatThaiDate } from "@/lib/utils";
@@ -48,7 +48,6 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
       minute: "2-digit",
       timeZone: "Asia/Bangkok",
     }).format(new Date(pendingOrder.created_at));
-    const summary = await getMyOrderSummary(pendingOrder.id);
     body = (
       <div className="grid gap-4">
         <section className="grid gap-3 rounded-xl bg-amber-50 p-5 text-amber-900" aria-labelledby="pending-title">
@@ -56,22 +55,20 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
             <Clock className="size-5" aria-hidden /> {t("pendingTitle")}
           </h2>
           <p className="text-sm">{t("pendingHint", { amount: formatBaht(pendingOrder.total), date: sent })}</p>
-          {summary && summary.items.length > 0 ? (
+          {pendingOrder.items.length > 0 ? (
             <div className="grid gap-1 rounded-lg bg-background p-3 text-sm text-foreground">
               <p className="text-xs text-muted-foreground">{t("pendingItems")}</p>
               <ul className="grid gap-1">
-                {summary.items.map((i, n) => (
+                {pendingOrder.items.map((i, n) => (
                   <li key={n} className="flex justify-between gap-2">
                     <span>{i.description}</span>
                     <span className="tabular-nums">{formatBaht(i.amount)}</span>
                   </li>
                 ))}
               </ul>
-              {summary.method ? (
+              {pendingOrder.method ? (
                 <p className="text-xs text-muted-foreground">
-                  {t("pendingMethod", {
-                    method: t(`methods.${summary.method === "promptpay" ? "promptpay" : "transfer"}`),
-                  })}
+                  {t("pendingMethod", { method: t(`methods.${pendingOrder.method}`) })}
                 </p>
               ) : null}
             </div>
