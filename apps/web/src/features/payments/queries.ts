@@ -27,7 +27,13 @@ export interface PurchaseOptions {
   vat: VatSettings;
   payment: { promptpay_id: string | null; bank_account: string | null };
   templates: PurchaseTemplate[];
-  pending_order: { id: string; total: number; created_at: string } | null;
+  pending_order: {
+    id: string;
+    total: number;
+    created_at: string;
+    method: PaymentMethod | null;
+    items: { description: string; amount: number }[];
+  } | null;
 }
 
 /** `purchase_options(p_student)`; null when the student is missing or not visible to the caller (FORBIDDEN). */
@@ -43,7 +49,13 @@ export async function getPurchaseOptions(studentId: string): Promise<PurchaseOpt
     membership_price: Number(d.membership_price),
     vat: { enabled: d.vat.enabled, inclusive: d.vat.inclusive, rate: Number(d.vat.rate) },
     templates: d.templates.map((t) => ({ ...t, price: Number(t.price) })),
-    pending_order: d.pending_order ? { ...d.pending_order, total: Number(d.pending_order.total) } : null,
+    pending_order: d.pending_order
+      ? {
+          ...d.pending_order,
+          total: Number(d.pending_order.total),
+          items: (d.pending_order.items ?? []).map((i) => ({ description: i.description, amount: Number(i.amount) })),
+        }
+      : null,
   };
 }
 
@@ -207,3 +219,4 @@ export async function getTodayTakings(): Promise<TodayTakings> {
 
   return { payments, byMethod, grandTotal };
 }
+

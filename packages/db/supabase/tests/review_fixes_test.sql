@@ -128,6 +128,10 @@ select pg_temp.check((:'req'::jsonb ->> 'total')::numeric = 3500, 'สั่ง�
 select pg_temp.check(pg_temp.err(format('select public.request_package_purchase(%L, %L, true, %L, %L)', :'sid', :'tpl8', 'promptpay',
   'a0000000-0000-0000-0000-000000000005/s1.jpg')) = 'ORDER_PENDING', 'สั่งซ้ำระหว่างรอตรวจ ORDER_PENDING');
 select pg_temp.check((public.purchase_options(:'sid') -> 'pending_order' ->> 'id') = (:'req'::jsonb ->> 'order_id'), 'purchase_options แสดงบิลที่รอตรวจ');
+select pg_temp.check((public.purchase_options(:'sid') -> 'pending_order' ->> 'method') = 'promptpay'
+  and jsonb_array_length(public.purchase_options(:'sid') -> 'pending_order' -> 'items') = 2
+  and (select sum((x ->> 'amount')::numeric) from jsonb_array_elements(public.purchase_options(:'sid') -> 'pending_order' -> 'items') x) = 3500,
+  'purchase_options: บิลที่รอตรวจมีรายการ 2 บรรทัด รวม 3500 และวิธีจ่าย');
 select pg_temp.check((select status = 'pending_review' and pay_method = 'promptpay' from public.orders where id = (:'req'::jsonb ->> 'order_id')::uuid),
   'ผู้ปกครองเห็นบิลตัวเอง สถานะรอตรวจ');
 select pg_temp.check(pg_temp.err(format('select public.review_order(%L, true, null)', :'req'::jsonb ->> 'order_id')) = 'FORBIDDEN',

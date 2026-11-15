@@ -52,3 +52,33 @@ export async function StudentPhoto({
     </div>
   );
 }
+
+/** Signs many photo paths in one call (for lists); path -> signed URL. */
+export async function signStudentPhotos(paths: (string | null | undefined)[]): Promise<Map<string, string>> {
+  const list = [...new Set(paths.filter((p): p is string => Boolean(p)))];
+  const urls = new Map<string, string>();
+  if (list.length === 0) return urls;
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(list, SIGNED_URL_SECONDS);
+  if (error) console.error("[signStudentPhotos]", error);
+  for (const d of data ?? []) if (d.path && d.signedUrl) urls.set(d.path, d.signedUrl);
+  return urls;
+}
+
+/** Small round photo for table rows; `url` comes from signStudentPhotos. */
+export function StudentThumb({ url, className }: { url: string | null | undefined; className?: string }) {
+  const frame = cn(
+    "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-foreground",
+    className,
+  );
+  return url ? (
+    <span className={frame}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL */}
+      <img src={url} alt="" className="size-full object-cover" />
+    </span>
+  ) : (
+    <span className={frame} aria-hidden>
+      <UserRound className="size-4" />
+    </span>
+  );
+}

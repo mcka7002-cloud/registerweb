@@ -93,7 +93,9 @@
     "branch": "สาขา",
     "membership": "สมาชิกหมดอายุ",
     "status": "สถานะ",
-    "limit": "แสดงสูงสุด 50 คน"
+    "limit": "แสดงสูงสุด 50 คน",
+    "membershipSoon": "ใกล้หมดอายุ",
+    "membershipExpired": "หมดอายุ"
   },
   "detail": {
     "notFound": "ไม่พบนักเรียน",

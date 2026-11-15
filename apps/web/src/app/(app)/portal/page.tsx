@@ -19,7 +19,7 @@ export default async function PortalPage() {
   const waiting = registrations.filter((r) => r.status === "pending" || r.status === "trial_booked");
 
   const registerButton = (
-    <Button asChild size="lg">
+    <Button asChild size="lg" className="h-11 w-full sm:w-auto">
       <Link href="/register">
         <UserPlus /> {t("registerNew")}
       </Link>

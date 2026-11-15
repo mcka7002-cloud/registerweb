@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, startTransition } from "react";
 import { useTranslations } from "next-intl";
-import { ImageIcon } from "lucide-react";
+import { Camera } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,34 +120,46 @@ function PhotoField({
   return (
     <div className="flex flex-col gap-1.5 sm:col-span-2">
       <Label htmlFor="reg-photo">{t("fields.photo")}</Label>
-      <div className="flex items-center gap-4">
-        <div className="flex size-24 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted text-muted-foreground">
+      <div className={cn("flex items-center gap-4 rounded-lg border p-4", showError && "border-destructive")}>
+        <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground">
           {preview && !previewFailed ? (
             // eslint-disable-next-line @next/next/no-img-element -- local blob preview
             <img src={preview} alt={t("photo.previewAlt")} className="size-full object-cover" onError={() => setPreviewFailed(true)} />
           ) : (
-            <ImageIcon className="size-8" aria-hidden />
+            <Camera className="size-7" aria-hidden />
           )}
         </div>
         <div className="flex min-w-0 flex-col gap-2">
-          <Input
-            ref={inputRef}
-            id="reg-photo"
-            name="photo"
-            type="file"
-            accept={PHOTO_ACCEPT}
-            onChange={onChange}
-            aria-invalid={showError || undefined}
-            aria-describedby="reg-photo-hint"
-          />
           <p id="reg-photo-hint" className="text-xs text-muted-foreground">
             {previewFailed && fileName ? t("photo.noPreview", { name: fileName }) : t("photo.hint")}
           </p>
-          {fileName ? (
-            <Button type="button" variant="outline" size="sm" className="self-start" onClick={clear}>
-              {t("photo.remove")}
-            </Button>
-          ) : null}
+          <div className="flex flex-wrap gap-2">
+            <label
+              htmlFor="reg-photo"
+              className={cn(
+                "relative inline-flex h-11 cursor-pointer items-center justify-center rounded-md border px-4 text-sm font-medium hover:bg-accent has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50 sm:h-9",
+                showError && "border-destructive text-destructive",
+              )}
+            >
+              {fileName ? t("photo.change") : t("photo.pick")}
+              <input
+                ref={inputRef}
+                id="reg-photo"
+                name="photo"
+                type="file"
+                accept={PHOTO_ACCEPT}
+                onChange={onChange}
+                aria-invalid={showError || undefined}
+                aria-describedby="reg-photo-hint"
+                className="sr-only"
+              />
+            </label>
+            {fileName ? (
+              <Button type="button" variant="ghost" className="h-11 sm:h-9" onClick={clear}>
+                {t("photo.remove")}
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
       {showError ? (
@@ -290,15 +302,21 @@ export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
                 className={cn("mt-1 size-5 shrink-0 accent-primary", invalid.has("pdpa_consent") && "outline outline-destructive")}
               />
               <span>
-                {t("fields.pdpa")}
-                <span className="text-destructive">*</span>
+                <span className="block font-medium">
+                  {t("fields.pdpaTitle")}
+                  <span className="text-destructive">*</span>
+                </span>
+                <span className="block text-muted-foreground">{t("fields.pdpa")}</span>
               </span>
             </label>
             <FieldError name="pdpa_consent" invalid={invalid} />
           </div>
           <label className="flex items-start gap-3 text-sm leading-relaxed">
             <input type="checkbox" name="publish_consent" className="mt-1 size-5 shrink-0 accent-primary" />
-            <span>{t("fields.publish")}</span>
+            <span>
+              <span className="block font-medium">{t("fields.publishTitle")}</span>
+              <span className="block text-muted-foreground">{t("fields.publish")}</span>
+            </span>
           </label>
         </CardContent>
       </Card>

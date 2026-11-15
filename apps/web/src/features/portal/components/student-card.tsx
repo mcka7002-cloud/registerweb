@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, ChevronDown, Clock, ShoppingCart, XCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { addDays } from "@registerweb/domain";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +10,6 @@ import type { PortalStudent } from "../queries";
 
 const hhmm = (time: string) => time.slice(0, 5);
 const longDate = { weekday: "short", day: "numeric", month: "short", year: "numeric" } as const;
-
-function addDays(isoDate: string, days: number): string {
-  const d = new Date(isoDate + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -118,7 +113,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button asChild>
+          <Button asChild className="h-11 w-full sm:h-9 sm:w-auto">
             <Link href={`/portal/buy/${s.id}`}>
               <ShoppingCart /> {t("buy")}
             </Link>
@@ -126,7 +121,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
         </div>
 
         <details className="group rounded-md border">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 min-h-11 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
             {t("details")}
             <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
           </summary>

@@ -19,7 +19,7 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
   const t = await getTranslations("payments.buy");
 
   const back = (
-    <Button asChild variant="outline">
+    <Button asChild variant="outline" className="h-11 w-full sm:w-auto">
       <Link href="/portal">
         <ArrowLeft /> {t("back")}
       </Link>
@@ -49,12 +49,33 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
       timeZone: "Asia/Bangkok",
     }).format(new Date(pendingOrder.created_at));
     body = (
-      <EmptyState
-        icon={Clock}
-        title={t("pendingTitle")}
-        description={t("pendingHint", { amount: formatBaht(pendingOrder.total), date: sent })}
-        action={back}
-      />
+      <div className="grid gap-4">
+        <section className="grid gap-3 rounded-xl bg-amber-50 p-5 text-amber-900" aria-labelledby="pending-title">
+          <h2 id="pending-title" className="flex items-center gap-2 text-lg font-semibold">
+            <Clock className="size-5" aria-hidden /> {t("pendingTitle")}
+          </h2>
+          <p className="text-sm">{t("pendingHint", { amount: formatBaht(pendingOrder.total), date: sent })}</p>
+          {pendingOrder.items.length > 0 ? (
+            <div className="grid gap-1 rounded-lg bg-background p-3 text-sm text-foreground">
+              <p className="text-xs text-muted-foreground">{t("pendingItems")}</p>
+              <ul className="grid gap-1">
+                {pendingOrder.items.map((i, n) => (
+                  <li key={n} className="flex justify-between gap-2">
+                    <span>{i.description}</span>
+                    <span className="tabular-nums">{formatBaht(i.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+              {pendingOrder.method ? (
+                <p className="text-xs text-muted-foreground">
+                  {t("pendingMethod", { method: t(`methods.${pendingOrder.method}`) })}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </section>
+        {back}
+      </div>
     );
   } else if (!hasPayment) {
     body = <EmptyState icon={Phone} title={t("noPayment")} description={t("noPaymentHint")} action={back} />;
@@ -81,6 +102,12 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
 
   return (
     <div className="mx-auto w-full max-w-xl">
+      <Link
+        href="/portal"
+        className="mb-2 inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" aria-hidden /> {t("back")}
+      </Link>
       <PageHeader title={t("title")} description={t("description")} />
       <Card className="mb-4">
         <CardContent className="flex flex-wrap items-baseline justify-between gap-2">

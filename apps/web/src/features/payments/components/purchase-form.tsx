@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ImageUp, Send } from "lucide-react";
+import { Send, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,52 +102,43 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
     });
   }
 
+  const tile = (selected: boolean) =>
+    cn(
+      "relative flex cursor-pointer flex-col gap-1 rounded-lg border p-3 transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
+      selected ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted/50",
+    );
+
   return (
     <div className="grid gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>{t("package")}</CardTitle>
+          <CardTitle>{t("step1")}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <fieldset className="grid gap-2">
+        <CardContent className="grid gap-4">
+          <fieldset className="grid grid-cols-2 gap-2">
             <legend className="sr-only">{t("package")}</legend>
             {templates.map((x) => (
-              <label
-                key={x.id}
-                className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors",
-                  x.id === templateId ? "border-primary bg-primary/5" : "hover:bg-muted/50",
-                )}
-              >
+              <label key={x.id} className={tile(x.id === templateId)}>
                 <input
                   type="radio"
                   name="template"
                   value={x.id}
                   checked={x.id === templateId}
                   onChange={() => setTemplateId(x.id)}
-                  className="size-4 accent-primary"
+                  className="sr-only"
                 />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-medium">{x.name}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    {x.sessions == null ? t("unlimited") : t("sessions", { count: x.sessions })} ·{" "}
-                    {t("days", { count: x.duration_days })}
-                  </span>
+                <span className="font-medium">{x.name}</span>
+                <span className="text-lg font-semibold tabular-nums">{formatBaht(x.price)}</span>
+                <span className="text-xs text-muted-foreground">
+                  {x.sessions == null ? t("unlimited") : t("sessions", { count: x.sessions })} ·{" "}
+                  {t("days", { count: x.duration_days })}
                 </span>
-                <span className="font-semibold tabular-nums">{formatBaht(x.price)}</span>
               </label>
             ))}
           </fieldset>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("membership")}</CardTitle>
-        </CardHeader>
-        <CardContent>
           {options.membership_required ? (
-            <div className="flex items-start justify-between gap-3 text-sm">
+            <div className="flex items-start justify-between gap-3 rounded-lg border p-3 text-sm">
               <span>
                 <span className="block font-medium">{membershipLabel}</span>
                 <span className="block text-xs text-muted-foreground">{t("membershipRequired")}</span>
@@ -155,7 +146,10 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
               <span className="font-semibold tabular-nums">{formatBaht(options.membership_price)}</span>
             </div>
           ) : (
-            <label htmlFor="buy-membership" className="flex cursor-pointer items-start gap-3 text-sm">
+            <label
+              htmlFor="buy-membership"
+              className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm hover:bg-muted/50"
+            >
               <input
                 id="buy-membership"
                 type="checkbox"
@@ -170,42 +164,37 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
               <span className="font-semibold tabular-nums">{formatBaht(options.membership_price)}</span>
             </label>
           )}
+
+          <div className="rounded-lg bg-muted/50 p-4">
+            <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm tabular-nums">
+              <dt className="text-muted-foreground">{t("net")}</dt>
+              <dd className="text-right">{formatBaht(preview.net)}</dd>
+              <dt className="text-muted-foreground">{vat.enabled ? t("vat", { rate: vat.rate }) : t("noVat")}</dt>
+              <dd className="text-right">{formatBaht(preview.vat)}</dd>
+              <dt className="font-semibold">{t("total")}</dt>
+              <dd className="text-right text-lg font-semibold">
+                {formatBaht(preview.total)} {t("baht")}
+              </dd>
+            </dl>
+            <p className="mt-2 text-xs text-muted-foreground">{t("previewNote")}</p>
+          </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t("summary")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm tabular-nums">
-            <dt>{t("net")}</dt>
-            <dd className="text-right">{formatBaht(preview.net)}</dd>
-            <dt>{vat.enabled ? t("vat", { rate: vat.rate }) : t("noVat")}</dt>
-            <dd className="text-right">{formatBaht(preview.vat)}</dd>
-            <dt className="font-semibold">{t("total")}</dt>
-            <dd className="text-right text-lg font-semibold">
-              {formatBaht(preview.total)} {t("baht")}
-            </dd>
-          </dl>
-          <p className="mt-2 text-xs text-muted-foreground">{t("previewNote")}</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("pay")}</CardTitle>
+          <CardTitle>{t("step2")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           {methods.length > 1 ? (
-            <fieldset className="grid grid-cols-2 gap-2">
-              <legend className="mb-2 text-sm font-medium">{t("method")}</legend>
+            <fieldset className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
+              <legend className="sr-only">{t("method")}</legend>
               {methods.map((m) => (
                 <label
                   key={m}
                   className={cn(
-                    "flex cursor-pointer items-center gap-2 rounded-lg border p-3 text-sm",
-                    m === method ? "border-primary bg-primary/5" : "hover:bg-muted/50",
+                    "relative flex h-11 cursor-pointer items-center justify-center rounded-md text-sm font-medium transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
+                    m === method ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <input
@@ -214,7 +203,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
                     value={m}
                     checked={m === method}
                     onChange={() => setMethod(m)}
-                    className="size-4 accent-primary"
+                    className="sr-only"
                   />
                   {t(`methods.${m}`)}
                 </label>
@@ -223,27 +212,27 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
           ) : null}
 
           {method === "promptpay" && payment.promptpay_id ? (
-            <div className="grid justify-items-center gap-2 text-center">
+            <div className="grid justify-items-center gap-2 rounded-lg border p-4 text-center">
               {qr ? (
                 // eslint-disable-next-line @next/next/no-img-element -- server-rendered SVG data URL
                 <img
                   src={qr}
                   alt={t("qrAlt", { amount: formatBaht(preview.total) })}
-                  className="size-56 rounded-md border bg-white p-2"
+                  className="size-56 bg-white p-2"
                 />
               ) : null}
-              <p className="text-lg font-semibold tabular-nums">
+              <p className="text-xl font-semibold tabular-nums">
                 {formatBaht(preview.total)} {t("baht")}
               </p>
-              {qr ? <p className="text-xs text-muted-foreground">{t("qrHint")}</p> : null}
-              <p className="text-sm">
-                {t("promptpayId")}: <span className="font-medium tabular-nums">{payment.promptpay_id}</span>
+              <p className="text-sm text-muted-foreground">
+                {t("promptpayId")}: <span className="tabular-nums">{payment.promptpay_id}</span>
               </p>
+              {qr ? <p className="text-xs text-muted-foreground">{t("qrHint")}</p> : null}
             </div>
           ) : null}
 
           {method === "transfer" && payment.bank_account ? (
-            <div className="rounded-md bg-muted/50 p-3 text-sm">
+            <div className="rounded-lg border p-4 text-sm">
               <p className="font-medium">{t("bankAccount")}</p>
               <p className="whitespace-pre-line">{payment.bank_account}</p>
               <p className="mt-2 font-semibold tabular-nums">
@@ -251,16 +240,21 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
               </p>
             </div>
           ) : null}
+        </CardContent>
+      </Card>
 
-          <div className="grid gap-2">
-            <p className="text-sm font-medium">{t("slip")}</p>
-            <label
-              htmlFor="buy-slip"
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed p-4 text-sm hover:bg-muted/50"
-            >
-              <ImageUp className="size-4" aria-hidden />
-              {slip ? t("slipChange") : t("slipPick")}
-            </label>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("step3")}</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3">
+          <label
+            htmlFor="buy-slip"
+            className="relative flex cursor-pointer flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-6 text-center text-sm hover:bg-muted/50 has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50"
+          >
+            <Upload className="size-6 text-muted-foreground" aria-hidden />
+            <span className="font-medium">{slip ? t("slipChange") : t("slipPick")}</span>
+            <span className="text-xs text-muted-foreground">{t("slipHint")}</span>
             <input
               id="buy-slip"
               type="file"
@@ -268,19 +262,22 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
               className="sr-only"
               onChange={(e) => onPick(e.target.files?.[0])}
             />
-            <p className="text-xs text-muted-foreground">{t("slipHint")}</p>
-            {slipError ? <p className="text-sm text-destructive">{slipError}</p> : null}
-            {previewUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- local blob preview
-              <img src={previewUrl} alt={t("slipPreview")} className="max-h-80 w-auto justify-self-center rounded-md border" />
-            ) : null}
-          </div>
-
-          <Button size="lg" disabled={pending || !template || !slip} onClick={submit}>
-            <Send /> {pending ? t("submitting") : t("submit")}
-          </Button>
+          </label>
+          {slipError ? <p className="text-sm text-destructive">{slipError}</p> : null}
+          {previewUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- local blob preview
+            <img
+              src={previewUrl}
+              alt={t("slipPreview")}
+              className="max-h-80 w-auto justify-self-center rounded-md border"
+            />
+          ) : null}
         </CardContent>
       </Card>
+
+      <Button size="lg" className="h-11" disabled={pending || !template || !slip} onClick={submit}>
+        <Send /> {pending ? t("submitting") : t("submit")}
+      </Button>
     </div>
   );
 }

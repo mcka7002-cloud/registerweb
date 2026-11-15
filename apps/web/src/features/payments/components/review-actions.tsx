@@ -60,13 +60,10 @@ export function ReviewActions({ orderId }: { orderId: string }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button disabled={pending} onClick={approve}>
-        <Check /> {t("approve")}
-      </Button>
+    <div className="flex flex-wrap justify-end gap-2">
       <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" disabled={pending}>
+          <Button variant="destructive-soft" disabled={pending}>
             <X /> {t("reject")}
           </Button>
         </DialogTrigger>
@@ -97,6 +94,9 @@ export function ReviewActions({ orderId }: { orderId: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Button disabled={pending} onClick={approve}>
+        <Check /> {t("approve")}
+      </Button>
     </div>
   );
 }
