@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { BrandLogo } from "@/components/brand";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,12 +23,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   const { error } = await searchParams;
   const t = await getTranslations("auth");
+  const tApp = await getTranslations("app");
   const devLogin = process.env.NEXT_PUBLIC_DEV_LOGIN === "1";
   const errorText =
     error === "credentials" ? t("invalidCredentials") : error === "oauth" ? t("oauthFailed") : null;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-10">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-muted px-4 py-10">
+      <BrandLogo alt={tApp("logoAlt")} priority className="h-16 sm:h-20" />
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">{t("title")}</CardTitle>

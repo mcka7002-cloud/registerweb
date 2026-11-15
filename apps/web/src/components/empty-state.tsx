@@ -1,13 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { Inbox } from "lucide-react";
+import { Mascot } from "@/components/brand";
 import { cn } from "@/lib/utils";
 
-/** Placeholder for an empty list or table: icon, title, optional description and action. */
+/** Placeholder for an empty list or table: the mascot (or an icon), title, optional description and action. */
 export function EmptyState({
   title,
   description,
   action,
-  icon: Icon = Inbox,
+  icon: Icon,
   className,
 }: {
   title: React.ReactNode;
@@ -19,11 +19,11 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-6 py-12 text-center",
+        "flex flex-col items-center justify-center gap-2 rounded-xl bg-muted px-6 py-10 text-center",
         className,
       )}
     >
-      <Icon className="size-8 text-muted-foreground" aria-hidden />
+      {Icon ? <Icon className="size-8 text-muted-foreground" aria-hidden /> : <Mascot className="h-24" />}
       <p className="font-semibold">{title}</p>
       {description ? <p className="max-w-sm text-sm text-muted-foreground">{description}</p> : null}
       {action ? <div className="mt-2">{action}</div> : null}

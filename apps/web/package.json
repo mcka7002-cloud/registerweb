@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans-thai": "^5.2.5",
+    "@fontsource/mitr": "5",
     "@registerweb/domain": "workspace:*",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
