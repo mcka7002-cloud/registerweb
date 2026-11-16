@@ -47,7 +47,14 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
       <PageHeader
         title={t("review.title")}
         description={`${reg.branch?.name ?? ""} · ${formatThaiDateTime(reg.created_at)}`}
-        actions={<Badge variant="secondary">{t(`registrations.statuses.${reg.status}`)}</Badge>}
+        actions={
+          <Badge
+            variant="secondary"
+            className={reg.status === "pending" ? "bg-warning text-warning-foreground" : reg.status === "approved" ? "bg-success text-success-foreground" : undefined}
+          >
+            {t(`registrations.statuses.${reg.status}`)}
+          </Badge>
+        }
       />
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <div className="grid content-start gap-6">

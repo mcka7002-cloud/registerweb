@@ -19,7 +19,7 @@ export function PendingOrderNotice({ total, createdAt, className }: { total: num
     <div
       role="status"
       className={cn(
-        "flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900",
+        "flex items-start gap-2 rounded-xl bg-warning p-3 text-sm text-warning-foreground",
         className,
       )}
     >

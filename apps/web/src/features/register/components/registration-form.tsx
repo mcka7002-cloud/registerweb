@@ -120,8 +120,8 @@ function PhotoField({
   return (
     <div className="flex flex-col gap-1.5 sm:col-span-2">
       <Label htmlFor="reg-photo">{t("fields.photo")}</Label>
-      <div className={cn("flex items-center gap-4 rounded-lg border p-4", showError && "border-destructive")}>
-        <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground">
+      <div className={cn("flex items-center gap-4 rounded-2xl border p-4", showError && "border-destructive")}>
+        <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-muted-foreground">
           {preview && !previewFailed ? (
             // eslint-disable-next-line @next/next/no-img-element -- local blob preview
             <img src={preview} alt={t("photo.previewAlt")} className="size-full object-cover" onError={() => setPreviewFailed(true)} />

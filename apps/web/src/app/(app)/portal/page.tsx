@@ -31,7 +31,7 @@ export default async function PortalPage() {
       <PageHeader title={t("title")} description={t("description")} actions={students.length > 0 ? registerButton : null} />
 
       {waiting.length > 0 ? (
-        <Card>
+        <Card className="border-0 bg-muted shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ClipboardList className="size-4" /> {t("waiting.title")}
@@ -64,7 +64,7 @@ export default async function PortalPage() {
           <StudentCard
             key={s.id}
             student={s}
-            photo={<StudentPhoto path={s.photoPath} alt={s.fullName} className="size-16 shrink-0" />}
+            photo={<StudentPhoto path={s.photoPath} alt={s.fullName} className="size-16 shrink-0 rounded-full border-0" />}
           />
         ))
       )}

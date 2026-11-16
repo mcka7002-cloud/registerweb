@@ -24,7 +24,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-md bg-muted/50 px-3 py-2">
+    <div className="flex flex-col gap-0.5 rounded-xl bg-muted px-3 py-2">
       <span className="text-xs text-muted-foreground">{label}</span>
       <span className="font-medium">{children}</span>
     </div>
@@ -90,7 +90,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
                     {t("membership.expired")}
                   </Badge>
                 ) : membershipState === "soon" ? (
-                  <Badge className="bg-amber-100 text-amber-900">
+                  <Badge className="bg-warning text-warning-foreground">
                     <AlertTriangle />
                     {t("membership.expiringSoon")}
                   </Badge>
@@ -120,7 +120,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
         {s.classesRequired ? <ExamProgress done={s.examCounter} required={s.classesRequired} /> : null}
 
         {s.order?.status === "pending_review" ? (
-          <p className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <p className="flex items-start gap-2 rounded-xl bg-warning px-3 py-2 text-sm text-warning-foreground">
             <Clock className="mt-0.5 size-4 shrink-0" />
             {t("order.pending", {
               total: formatBaht(s.order.total),
@@ -128,7 +128,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
             })}
           </p>
         ) : s.order?.status === "rejected" ? (
-          <p className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <p className="flex items-start gap-2 rounded-xl bg-accent px-3 py-2 text-sm text-destructive">
             <XCircle className="mt-0.5 size-4 shrink-0" />
             {t("order.rejected", { reason: s.order.rejectReason ?? "" })}
           </p>
@@ -142,12 +142,12 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
           </Button>
         </div>
 
-        <details className="group rounded-md border">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 min-h-11 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
+        <details className="group overflow-hidden rounded-3xl border">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 min-h-11 px-4 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
             {t("details")}
             <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
           </summary>
-          <div className="grid gap-6 border-t p-3 md:grid-cols-2">
+          <div className="grid gap-6 border-t bg-muted p-4 md:grid-cols-2">
             <Section title={t("packages.title")}>
               {s.packages.length === 0 ? (
                 <p className="text-sm text-muted-foreground">{t("packages.empty")}</p>
