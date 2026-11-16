@@ -88,3 +88,26 @@ select public.book_sessions(
 
 select set_config('request.jwt.claims', '', false);
 select set_config('request.jwt.claim.sub', '', false);
+
+-- ---------- MVP2: ใบสมัครนัดทดลองเรียน + ครูประจำคลาส (ผ่าน RPC จริง) ----------
+insert into public.registrations (id, branch_id, account_id, payload, pdpa_consent, publish_consent, created_at) values
+  ('33333333-0000-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', '22222222-0000-0000-0000-000000000004',
+   '{"first_name":"ด.ช.กล้า","last_name":"ทดสอบ","first_name_en":"Kla","last_name_en":"Thodsob","nickname":"กล้า",
+     "birth_date":"2018-11-20","gender":"male",
+     "guardians":[{"full_name":"คุณแม่ ทดสอบ","relation":"แม่","phones":["0812345678"]}]}', true, false, now() - interval '1 day');
+
+select set_config('request.jwt.claims', '{"sub":"22222222-0000-0000-0000-000000000003","role":"authenticated"}', false);
+select set_config('request.jwt.claim.sub', '22222222-0000-0000-0000-000000000003', false);
+select public.book_trial('33333333-0000-0000-0000-000000000003',
+  (select id from public.class_sessions where branch_id = '11111111-0000-0000-0000-000000000001'
+      and class_date >= (now() at time zone 'Asia/Bangkok')::date and not cancelled
+    order by class_date, starts_at limit 1));
+
+-- ผู้จัดการตั้ง "ครูสมชาย" เป็นครูประจำทุกคลาส
+select set_config('request.jwt.claims', '{"sub":"22222222-0000-0000-0000-000000000002","role":"authenticated"}', false);
+select set_config('request.jwt.claim.sub', '22222222-0000-0000-0000-000000000002', false);
+select public.set_session_teachers(s.id, array['22222222-0000-0000-0000-000000000003']::uuid[], false)
+  from public.class_sessions s where s.branch_id = '11111111-0000-0000-0000-000000000001';
+
+select set_config('request.jwt.claims', '', false);
+select set_config('request.jwt.claim.sub', '', false);
