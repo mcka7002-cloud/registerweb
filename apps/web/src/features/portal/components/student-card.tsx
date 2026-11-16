@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatBaht, formatThaiDate, todayInBangkok } from "@/lib/utils";
+import { classesToExam } from "@registerweb/domain";
+import { BeltChip } from "@/features/belts/belt";
 import type { PortalStudent } from "../queries";
 
 const hhmm = (time: string) => time.slice(0, 5);
@@ -29,6 +31,24 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
+/** "อีก N ครั้งถึงสอบเลื่อนสาย" with one segment per required class. */
+async function ExamProgress({ done, required }: { done: number; required: number }) {
+  const t = await getTranslations("portal.journey");
+  const left = classesToExam(done, required);
+  const filled = Math.min(done, required);
+  return (
+    <div className="flex flex-col gap-2 rounded-xl bg-muted px-3 py-3">
+      <p className="text-sm font-medium">{left > 0 ? t("left", { count: left }) : t("ready")}</p>
+      <div className="flex gap-0.5" role="img" aria-label={t("attended", { done: filled, required })}>
+        {Array.from({ length: required }, (_, i) => (
+          <span key={i} className={i < filled ? "h-2 flex-1 rounded-full bg-[#F2C14E]" : "h-2 flex-1 rounded-full bg-border"} />
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">{t("attended", { done: filled, required })}</p>
+    </div>
+  );
+}
+
 /** One student: a short summary that is always visible, and the full history behind "ดูรายละเอียด". */
 export async function StudentCard({ student: s, photo }: { student: PortalStudent; photo?: React.ReactNode }) {
   const t = await getTranslations("portal");
@@ -47,7 +67,7 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
           <CardTitle className="text-xl">{s.nickname ? `${s.nickname} · ${s.fullName}` : s.fullName}</CardTitle>
           <CardDescription className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
             <span>{t("code", { code: s.code })}</span>
-            {s.beltName ? <span>{s.beltName}</span> : null}
+            {s.beltName ? <BeltChip rankId={s.beltRankId} name={s.beltName} /> : null}
             {s.branchName ? (
               <span>
                 {t("branch")} {s.branchName}
@@ -96,6 +116,8 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
             )}
           </Fact>
         </div>
+
+        {s.classesRequired ? <ExamProgress done={s.examCounter} required={s.classesRequired} /> : null}
 
         {s.order?.status === "pending_review" ? (
           <p className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">

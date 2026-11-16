@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BeltChip } from "@/features/belts/belt";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookSessionsDialog } from "@/features/booking/components/book-sessions-dialog";
@@ -108,7 +109,7 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
               <dt className="text-muted-foreground">{t("detail.branch")}</dt>
               <dd>{student.branch?.name}</dd>
               <dt className="text-muted-foreground">{t("detail.belt")}</dt>
-              <dd>{student.belt ?? "–"}</dd>
+              <dd>{student.belt ? <BeltChip rankId={student.beltRankId} name={student.belt} /> : "–"}</dd>
               <dt className="text-muted-foreground">{t("detail.membership")}</dt>
               <dd className={membershipDue ? "text-destructive" : undefined}>{membershipText}</dd>
               <dt className="text-muted-foreground">{t("fields.birth_date")}</dt>

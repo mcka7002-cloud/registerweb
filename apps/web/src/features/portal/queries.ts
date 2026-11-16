@@ -31,6 +31,10 @@ export interface PortalStudent {
   fullName: string;
   nickname: string | null;
   beltName: string | null;
+  beltRankId: number;
+  /** classes attended since the last belt exam, and how many the current rank needs */
+  examCounter: number;
+  classesRequired: number | null;
   branchName: string | null;
   membershipExpiresOn: string | null;
   photoPath: string | null;
@@ -65,7 +69,7 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
   const [studentsRes, packagesRes, bookingsRes, attendanceLists, ordersRes] = await Promise.all([
     supabase
       .from("students")
-      .select("id, code, first_name, last_name, nickname, membership_expires_on, photo_path, belt_ranks(name_th), branches(name)")
+      .select("id, code, first_name, last_name, nickname, membership_expires_on, photo_path, belt_rank_id, exam_counter, belt_ranks(name_th, classes_required), branches(name)")
       .in("id", ids)
       .order("code"),
     supabase
@@ -111,6 +115,9 @@ export async function loadPortal(accountId: string): Promise<PortalStudent[]> {
     fullName: `${s.first_name} ${s.last_name}`,
     nickname: s.nickname,
     beltName: s.belt_ranks?.name_th ?? null,
+    beltRankId: s.belt_rank_id,
+    examCounter: s.exam_counter,
+    classesRequired: s.belt_ranks?.classes_required ?? null,
     branchName: s.branches?.name ?? null,
     membershipExpiresOn: s.membership_expires_on,
     photoPath: s.photo_path,

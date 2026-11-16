@@ -95,7 +95,8 @@
     "status": "สถานะ",
     "limit": "แสดงสูงสุด 50 คน",
     "membershipSoon": "ใกล้หมดอายุ",
-    "membershipExpired": "หมดอายุ"
+    "membershipExpired": "หมดอายุ",
+    "belt": "สาย"
   },
   "detail": {
     "notFound": "ไม่พบนักเรียน",
