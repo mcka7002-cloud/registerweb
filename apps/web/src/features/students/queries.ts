@@ -154,7 +154,7 @@ export async function getStudent(id: string) {
   const { data, error } = await supabase
     .from("students")
     .select(
-      "id, branch_id, code, first_name, last_name, first_name_en, last_name_en, nickname, birth_date, gender, height_cm, weight_kg, uniform_size, medical_notes, emergency_name, emergency_phone, membership_expires_on, status, exam_counter, branches(name, code), belt_ranks(id, name_th), guardians(id, full_name, nickname, relation, phones, sort_order)",
+      "id, branch_id, code, first_name, last_name, first_name_en, last_name_en, nickname, birth_date, gender, height_cm, weight_kg, uniform_size, medical_notes, emergency_name, emergency_phone, membership_expires_on, status, exam_counter, branches(name, code), belt_ranks(id, name_th, classes_required), guardians(id, full_name, nickname, relation, phones, sort_order)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -168,6 +168,7 @@ export async function getStudent(id: string) {
     branch: one(branches),
     belt: one(belt_ranks)?.name_th ?? null,
     beltRankId: one(belt_ranks)?.id ?? 0,
+    classesRequired: one(belt_ranks)?.classes_required ?? null,
     guardians: [...(guardians ?? [])].sort((a, b) => a.sort_order - b.sort_order),
   };
 }

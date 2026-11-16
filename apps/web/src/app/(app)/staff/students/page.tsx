@@ -75,11 +75,11 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                       {s.status === "active" && s.membership_expires_on && s.membership_expires_on < today ? (
                         <Badge variant="destructive">{t("list.membershipExpired")}</Badge>
                       ) : s.status === "active" && s.membership_expires_on && s.membership_expires_on <= soon ? (
-                        <Badge className="bg-amber-100 text-amber-900">{t("list.membershipSoon")}</Badge>
+                        <Badge className="bg-warning text-warning-foreground">{t("list.membershipSoon")}</Badge>
                       ) : (
                         <Badge
                           variant={s.status === "active" ? "secondary" : "outline"}
-                          className={s.status === "active" ? "bg-emerald-50 text-emerald-800" : undefined}
+                          className={s.status === "active" ? "bg-success text-success-foreground" : undefined}
                         >
                           {t(`detail.statuses.${s.status}`)}
                         </Badge>

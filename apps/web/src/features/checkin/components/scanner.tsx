@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, CircleAlert, XCircle } from "lucide-react";
+import { CheckCircle2, CircleAlert, ScanLine, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Mascot } from "@/components/brand";
+import { BrandLogo, Mascot } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { cn, errorKey } from "@/lib/utils";
 import { checkIn } from "../actions";
@@ -30,6 +30,7 @@ export function Scanner({
 }) {
   const t = useTranslations("checkin");
   const tRoot = useTranslations();
+  const logoAlt = tRoot("app.logoAlt");
   const inputRef = useRef<HTMLInputElement>(null);
   const busyRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -109,15 +110,17 @@ export function Scanner({
   }
 
   return (
-    <div className="relative flex h-dvh flex-col bg-background">
-      <header className="flex items-center justify-between gap-4 px-8 py-5">
-        <p className="text-2xl font-semibold">{heading}</p>
+    <div className="relative flex h-dvh flex-col bg-muted">
+      <header className="flex items-center justify-between gap-4 bg-background px-8 py-4">
+        <BrandLogo alt={logoAlt} priority className="h-12" />
+        <p className="font-heading text-2xl">{heading}</p>
         <Button asChild variant="outline" size="lg">
           <Link href={changeSessionHref}>{t("changeSession")}</Link>
         </Button>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center gap-8 px-8 pb-16">
+        <Mascot className="h-48" />
         <p className="text-center text-3xl text-muted-foreground">{t("scanPrompt")}</p>
         <form onSubmit={onSubmit} className="flex w-full max-w-3xl gap-4">
           <label htmlFor="kiosk-code" className="sr-only">
@@ -137,10 +140,10 @@ export function Scanner({
             spellCheck={false}
             enterKeyHint="go"
             placeholder={t("inputLabel")}
-            className="h-24 min-w-0 flex-1 rounded-xl border-2 border-input bg-transparent px-6 text-center font-mono text-5xl tracking-widest outline-none focus:border-ring focus:ring-4 focus:ring-ring/30"
+            className="h-24 min-w-0 flex-1 rounded-3xl border-2 border-input bg-background px-6 text-center font-mono text-5xl tracking-widest outline-none focus:border-ring focus:ring-4 focus:ring-ring/30"
           />
-          <Button type="submit" disabled={busy} className="h-24 px-10 font-heading text-2xl">
-            {busy ? t("checking") : t("submit")}
+          <Button type="submit" disabled={busy} className="h-24 px-10 font-heading text-2xl [&_svg:not([class*='size-'])]:size-7">
+            <ScanLine aria-hidden /> {busy ? t("checking") : t("submit")}
           </Button>
         </form>
       </main>

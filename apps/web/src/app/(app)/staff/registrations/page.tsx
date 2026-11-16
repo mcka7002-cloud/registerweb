@@ -44,7 +44,16 @@ export default async function RegistrationsPage() {
                     <TableCell>{r.branch}</TableCell>
                     <TableCell>{formatThaiDateTime(r.created_at)}</TableCell>
                     <TableCell>
-                      <Badge variant={r.status === "trial_booked" ? "default" : "secondary"}>
+                      <Badge
+                        className={
+                          r.status === "pending"
+                            ? "bg-warning text-warning-foreground"
+                            : r.status === "approved"
+                              ? "bg-success text-success-foreground"
+                              : undefined
+                        }
+                        variant={r.status === "trial_booked" ? "default" : "secondary"}
+                      >
                         {t(`statuses.${r.status}`)}
                       </Badge>
                       {r.trial_at ? (

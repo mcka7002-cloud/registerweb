@@ -50,7 +50,7 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
     }).format(new Date(pendingOrder.created_at));
     body = (
       <div className="grid gap-4">
-        <section className="grid gap-3 rounded-xl bg-amber-50 p-5 text-amber-900" aria-labelledby="pending-title">
+        <section className="grid gap-3 rounded-2xl bg-warning p-5 text-warning-foreground" aria-labelledby="pending-title">
           <h2 id="pending-title" className="flex items-center gap-2 text-lg font-semibold">
             <Clock className="size-5" aria-hidden /> {t("pendingTitle")}
           </h2>

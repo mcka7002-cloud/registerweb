@@ -97,7 +97,7 @@ export function BranchDialog({ branch, trigger }: { branch?: BranchRow; trigger:
             <Label htmlFor="b-tax">{t("taxId")}</Label>
             <Input id="b-tax" value={form.tax_id ?? ""} onChange={(e) => set("tax_id", e.target.value)} />
           </div>
-          <fieldset className="grid gap-3 rounded-md border p-3">
+          <fieldset className="grid gap-3 rounded-2xl bg-muted p-4">
             <legend className="px-1 text-sm font-medium">{t("vat")}</legend>
             <CheckboxField id="b-vat" label={t("vatEnabled")} checked={form.vat_enabled} onChange={(v) => set("vat_enabled", v)} />
             <CheckboxField
@@ -121,7 +121,7 @@ export function BranchDialog({ branch, trigger }: { branch?: BranchRow; trigger:
               />
             </div>
           </fieldset>
-          <fieldset className="grid gap-3 rounded-md border p-3">
+          <fieldset className="grid gap-3 rounded-2xl bg-muted p-4">
             <legend className="px-1 text-sm font-medium">{t("payment")}</legend>
             <div className="grid gap-2">
               <Label htmlFor="b-promptpay">{t("promptpayId")}</Label>

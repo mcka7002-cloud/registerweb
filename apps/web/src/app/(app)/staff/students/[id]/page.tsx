@@ -4,7 +4,9 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BeltChip } from "@/features/belts/belt";
+import { classesToExam } from "@registerweb/domain";
+import { BeltBadge, BeltChip } from "@/features/belts/belt";
+import { beltTag } from "@/features/belts/labels";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookSessionsDialog } from "@/features/booking/components/book-sessions-dialog";
@@ -87,6 +89,15 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
               context={saleContext}
               hasMembership={expiry != null}
               membershipDue={membershipDue}
+              studentLabel={
+                <>
+                  <span className="font-medium">
+                    {student.first_name} {student.last_name}
+                    {student.nickname ? ` (${student.nickname})` : ""}
+                  </span>
+                  {student.belt ? <BeltChip rankId={student.beltRankId} name={student.belt} /> : null}
+                </>
+              }
             />
             <BookSessionsDialog
               studentId={student.id}
@@ -104,7 +115,35 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
             <CardTitle>{t("detail.profile")}</CardTitle>
           </CardHeader>
           <CardContent>
-            <StudentPhoto path={photoPath} alt={`${student.first_name} ${student.last_name}`} className="mb-4" />
+            <StudentPhoto path={photoPath} alt={`${student.first_name} ${student.last_name}`} className="mb-4 rounded-2xl border-0" />
+            {student.belt ? (
+              <div className="mb-4 flex items-center gap-4 rounded-2xl bg-muted p-4">
+                <BeltBadge
+                  rankId={student.beltRankId}
+                  name={student.belt}
+                  tag={beltTag(student.beltRankId, {
+                    start: t("beltTag.start"),
+                    gup: (n) => t("beltTag.gup", { n }),
+                    dan: (n) => t("beltTag.dan", { n }),
+                  })}
+                />
+                {student.classesRequired ? (
+                  <div className="flex flex-col gap-1">
+                    <p className="font-heading text-base">
+                      {classesToExam(student.exam_counter, student.classesRequired) > 0
+                        ? t("journey.left", { count: classesToExam(student.exam_counter, student.classesRequired) })
+                        : t("journey.ready")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("journey.attended", {
+                        done: Math.min(student.exam_counter, student.classesRequired),
+                        required: student.classesRequired,
+                      })}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted-foreground">{t("detail.branch")}</dt>
               <dd>{student.branch?.name}</dd>

@@ -6,10 +6,10 @@ import { cn, formatThaiDate, todayInBangkok } from "@/lib/utils";
 import type { MyRegistration, RegistrationStatus } from "../queries";
 
 const STATUS_CLASS: Record<RegistrationStatus, string> = {
-  pending: "bg-amber-100 text-amber-900",
+  pending: "bg-warning text-warning-foreground",
   trial_booked: "bg-sky-100 text-sky-900",
-  approved: "bg-emerald-100 text-emerald-900",
-  rejected: "bg-red-100 text-red-900",
+  approved: "bg-success text-success-foreground",
+  rejected: "bg-accent text-destructive",
 };
 
 export async function MyRegistrations({ items }: { items: MyRegistration[] }) {

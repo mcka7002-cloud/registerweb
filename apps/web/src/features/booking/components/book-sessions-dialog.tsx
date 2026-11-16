@@ -117,13 +117,13 @@ export function BookSessionsDialog({
               {sessions.length === 0 ? (
                 <p className="text-sm text-muted-foreground">{t("noSessions")}</p>
               ) : (
-                <ul className="grid max-h-[45vh] gap-1 overflow-y-auto rounded-md border p-2">
+                <ul className="grid max-h-[45vh] gap-1 overflow-y-auto rounded-2xl border p-2">
                   {sessions.map((s) => {
                     const taken = booked.has(s.id);
                     return (
                       <li key={s.id}>
                         <label
-                          className={`flex items-center gap-3 rounded px-2 py-1.5 text-sm ${taken ? "text-muted-foreground" : "cursor-pointer hover:bg-muted"}`}
+                          className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-1.5 text-sm ${taken ? "text-muted-foreground" : "cursor-pointer hover:bg-muted has-[:checked]:bg-muted"}`}
                         >
                           <input
                             type="checkbox"
@@ -138,7 +138,11 @@ export function BookSessionsDialog({
                           <span className="tabular-nums">
                             {s.starts_at.slice(0, 5)}–{s.ends_at.slice(0, 5)}
                           </span>
-                          {taken ? <span className="text-xs">{t("alreadyBooked")}</span> : null}
+                          {taken ? (
+                            <span className="rounded-full bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
+                              {t("alreadyBooked")}
+                            </span>
+                          ) : null}
                         </label>
                       </li>
                     );

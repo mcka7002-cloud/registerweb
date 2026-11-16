@@ -104,8 +104,8 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
 
   const tile = (selected: boolean) =>
     cn(
-      "relative flex cursor-pointer flex-col gap-1 rounded-lg border p-3 transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
-      selected ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-muted/50",
+      "relative flex cursor-pointer flex-col gap-1 rounded-2xl border p-3 transition-colors has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50",
+      selected ? "border-2 border-primary bg-accent" : "hover:bg-muted",
     );
 
   return (
@@ -165,7 +165,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
             </label>
           )}
 
-          <div className="rounded-lg bg-muted/50 p-4">
+          <div className="rounded-2xl bg-muted p-4">
             <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm tabular-nums">
               <dt className="text-muted-foreground">{t("net")}</dt>
               <dd className="text-right">{formatBaht(preview.net)}</dd>
@@ -212,7 +212,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
           ) : null}
 
           {method === "promptpay" && payment.promptpay_id ? (
-            <div className="grid justify-items-center gap-2 rounded-lg border p-4 text-center">
+            <div className="grid justify-items-center gap-2 rounded-2xl border p-4 text-center">
               {qr ? (
                 // eslint-disable-next-line @next/next/no-img-element -- server-rendered SVG data URL
                 <img
@@ -232,7 +232,7 @@ export function PurchaseForm({ options, qrByAmount }: { options: PurchaseOptions
           ) : null}
 
           {method === "transfer" && payment.bank_account ? (
-            <div className="rounded-lg border p-4 text-sm">
+            <div className="rounded-2xl border p-4 text-sm">
               <p className="font-medium">{t("bankAccount")}</p>
               <p className="whitespace-pre-line">{payment.bank_account}</p>
               <p className="mt-2 font-semibold tabular-nums">

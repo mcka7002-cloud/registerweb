@@ -31,6 +31,7 @@ export function SellPackageDialog({
   context,
   hasMembership,
   membershipDue,
+  studentLabel,
 }: {
   studentId: string;
   context: SaleContext;
@@ -38,6 +39,8 @@ export function SellPackageDialog({
   hasMembership: boolean;
   /** membership missing or expired → checkbox default on */
   membershipDue: boolean;
+  /** name + belt chip shown in a tinted strip under the title */
+  studentLabel?: React.ReactNode;
 }) {
   const t = useTranslations("sales");
   const tc = useTranslations();
@@ -86,6 +89,9 @@ export function SellPackageDialog({
           <DialogTitle>{t("sellTitle")}</DialogTitle>
           <DialogDescription>{t("sellHint")}</DialogDescription>
         </DialogHeader>
+        {studentLabel ? (
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-muted px-4 py-2.5 text-sm">{studentLabel}</div>
+        ) : null}
 
         {result ? (
           <div className="grid gap-4">

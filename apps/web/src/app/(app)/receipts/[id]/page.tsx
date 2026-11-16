@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { BrandLogo } from "@/components/brand";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { PrintButton } from "@/features/sales/components/print-button";
@@ -31,7 +32,7 @@ function formatIssuedAt(iso: string) {
 export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
   await requireRole();
   const { id } = await params;
-  const [t, ts] = await Promise.all([getTranslations("sales.receipt"), getTranslations("sales")]);
+  const [t, ts, tApp] = await Promise.all([getTranslations("sales.receipt"), getTranslations("sales"), getTranslations("app")]);
   const doc = UUID.test(id) ? await getReceipt(id) : null;
 
   if (!doc) return <EmptyState title={t("notFound")} description={t("notFoundHint")} />;
@@ -42,9 +43,10 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
       <div className="mb-4 flex justify-end print:hidden">
         <PrintButton label={t("print")} />
       </div>
-      <article className="receipt-sheet mx-auto max-w-3xl rounded-lg border bg-white p-6 text-sm text-black shadow-sm sm:p-10">
-        <header className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:justify-between">
+      <article className="receipt-sheet mx-auto max-w-3xl rounded-2xl border bg-white p-6 text-sm text-black shadow-sm sm:p-10">
+        <header className="flex flex-col gap-4 border-b-4 border-primary pb-6 sm:flex-row sm:justify-between">
           <div>
+            <BrandLogo alt={tApp("logoAlt")} className="mb-3 h-14" />
             <p className="text-lg font-semibold">{doc.branch?.name}</p>
             {doc.branch?.address ? <p className="text-neutral-600">{doc.branch.address}</p> : null}
             {doc.branch?.tax_id ? (
@@ -54,7 +56,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
             ) : null}
           </div>
           <div className="sm:text-right">
-            <h1 className="text-xl font-semibold">
+            <h1 className="font-heading text-xl">
               {doc.doc_type === "tax_invoice" ? t("taxInvoice") : t("title")}
               <span className="ml-2 text-sm font-normal text-neutral-500">{t("titleEn")}</span>
             </h1>
@@ -118,7 +120,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
           </dt>
           <dd className="text-right">{formatBaht(doc.vat_amount)}</dd>
           <dt className="border-t pt-1 font-semibold">{t("total")}</dt>
-          <dd className="border-t pt-1 text-right text-base font-semibold">
+          <dd className="border-t pt-1 text-right font-heading text-lg text-accent-foreground">
             {formatBaht(doc.total)} {t("baht")}
           </dd>
         </dl>

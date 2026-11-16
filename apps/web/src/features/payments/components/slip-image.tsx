@@ -9,7 +9,7 @@ export function SlipImage({ url }: { url: string | null }) {
   const t = useTranslations("payments.staff");
   if (!url) {
     return (
-      <div className="flex h-40 w-32 flex-col items-center justify-center gap-1 rounded-md border border-dashed text-xs text-muted-foreground">
+      <div className="flex h-40 w-32 flex-col items-center justify-center gap-1 rounded-xl bg-muted text-xs text-muted-foreground">
         <ImageOff className="size-5" aria-hidden />
         {t("noSlip")}
       </div>
@@ -18,7 +18,7 @@ export function SlipImage({ url }: { url: string | null }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button type="button" className="block shrink-0 overflow-hidden rounded-md border" aria-label={t("slipOpen")}>
+        <button type="button" className="block shrink-0 overflow-hidden rounded-xl border" aria-label={t("slipOpen")}>
           {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL from local/hosted Supabase */}
           <img src={url} alt={t("slip")} className="h-40 w-32 object-cover" />
         </button>
