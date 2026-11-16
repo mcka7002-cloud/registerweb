@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BeltChip } from "@/features/belts/belt";
 import { signStudentPhotos, StudentThumb } from "@/features/students/components/student-photo";
 import { searchStudents } from "@/features/students/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
@@ -40,6 +41,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                 <TableRow>
                   <TableHead>{t("fields.code")}</TableHead>
                   <TableHead>{t("list.name")}</TableHead>
+                  <TableHead>{t("list.belt")}</TableHead>
                   <TableHead>{t("list.branch")}</TableHead>
                   <TableHead>{t("list.membership")}</TableHead>
                   <TableHead>{t("list.status")}</TableHead>
@@ -64,6 +66,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                         </span>
                       </span>
                     </TableCell>
+                    <TableCell>{s.belt ? <BeltChip rankId={s.belt_rank_id} name={s.belt} /> : "–"}</TableCell>
                     <TableCell>{s.branch}</TableCell>
                     <TableCell className={s.membership_expires_on && s.membership_expires_on < today ? "text-destructive" : undefined}>
                       {s.membership_expires_on ? formatThaiDate(s.membership_expires_on) : "–"}

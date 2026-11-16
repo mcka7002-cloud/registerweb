@@ -109,6 +109,8 @@ export interface StudentListRow {
   membership_expires_on: string | null;
   branch: string;
   photo_path: string | null;
+  belt_rank_id: number;
+  belt: string | null;
 }
 
 /** Search by Thai/English name, nickname or code (RLS keeps it to my branches). */
@@ -116,7 +118,7 @@ export async function searchStudents(q: string): Promise<StudentListRow[]> {
   const supabase = await createClient();
   let query = supabase
     .from("students")
-    .select("id, code, first_name, last_name, nickname, status, membership_expires_on, photo_path, branches(code)")
+    .select("id, code, first_name, last_name, nickname, status, membership_expires_on, photo_path, belt_rank_id, belt_ranks(name_th), branches(code)")
     .is("anonymized_at", null)
     .order("code")
     .limit(50);
@@ -142,6 +144,8 @@ export async function searchStudents(q: string): Promise<StudentListRow[]> {
     membership_expires_on: s.membership_expires_on,
     branch: one(s.branches)?.code ?? "",
     photo_path: s.photo_path,
+    belt_rank_id: s.belt_rank_id,
+    belt: one(s.belt_ranks)?.name_th ?? null,
   }));
 }
 
@@ -150,7 +154,7 @@ export async function getStudent(id: string) {
   const { data, error } = await supabase
     .from("students")
     .select(
-      "id, branch_id, code, first_name, last_name, first_name_en, last_name_en, nickname, birth_date, gender, height_cm, weight_kg, uniform_size, medical_notes, emergency_name, emergency_phone, membership_expires_on, status, exam_counter, branches(name, code), belt_ranks(name_th), guardians(id, full_name, nickname, relation, phones, sort_order)",
+      "id, branch_id, code, first_name, last_name, first_name_en, last_name_en, nickname, birth_date, gender, height_cm, weight_kg, uniform_size, medical_notes, emergency_name, emergency_phone, membership_expires_on, status, exam_counter, branches(name, code), belt_ranks(id, name_th), guardians(id, full_name, nickname, relation, phones, sort_order)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -163,6 +167,7 @@ export async function getStudent(id: string) {
     weight_kg: student.weight_kg == null ? null : Number(student.weight_kg),
     branch: one(branches),
     belt: one(belt_ranks)?.name_th ?? null,
+    beltRankId: one(belt_ranks)?.id ?? 0,
     guardians: [...(guardians ?? [])].sort((a, b) => a.sort_order - b.sort_order),
   };
 }

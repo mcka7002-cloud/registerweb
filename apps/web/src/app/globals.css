@@ -1,10 +1,13 @@
 @import "tailwindcss";
 @import "@fontsource/ibm-plex-sans-thai/400.css";
 @import "@fontsource/ibm-plex-sans-thai/600.css";
+@import "@fontsource/mitr/500.css";
+@import "@fontsource/mitr/600.css";
 
-/* shadcn/ui (new-york, neutral) theme tokens for Tailwind v4 */
+/* Theme tokens: Friendly Dojang (Figma page 07, board 4). shadcn/ui names, Tailwind v4 */
 @theme inline {
   --font-sans: "IBM Plex Sans Thai", system-ui, sans-serif;
+  --font-heading: "Mitr", "IBM Plex Sans Thai", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -27,28 +30,38 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* contrast on white: primary 6.5:1, foreground 15:1, muted-foreground 5.9:1, input border 3.1:1 */
+  --radius: 1rem;
+  --background: #ffffff;
+  --foreground: #2a2223;
+  --card: #ffffff;
+  --card-foreground: #2a2223;
+  --popover: #ffffff;
+  --popover-foreground: #2a2223;
+  --primary: #b3261e;
+  --primary-foreground: #ffffff;
+  --secondary: #fff5f4;
+  --secondary-foreground: #2a2223;
+  --muted: #fff5f4;
+  --muted-foreground: #6e6263;
+  --accent: #fde7e5;
+  --accent-foreground: #8c1d18;
+  /* errors are darker than the brand red and always carry an icon + text */
+  --destructive: #8c1d18;
+  --border: #f0dcda;
+  --input: #a38e8c;
+  --ring: #b3261e;
+  --warning: #fff4e0;
+  --warning-foreground: #7a4a00;
+  --success: #e7f4ec;
+  --success-foreground: #1e6b3a;
 }
 
 @layer base {
@@ -57,5 +70,13 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  [data-slot="card-title"],
+  [data-slot="dialog-title"] {
+    font-family: var(--font-heading);
+    font-weight: 500;
   }
 }

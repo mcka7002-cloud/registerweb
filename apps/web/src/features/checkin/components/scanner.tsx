@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, CircleAlert, XCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Mascot } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { cn, errorKey } from "@/lib/utils";
 import { checkIn } from "../actions";
@@ -138,7 +139,7 @@ export function Scanner({
             placeholder={t("inputLabel")}
             className="h-24 min-w-0 flex-1 rounded-xl border-2 border-input bg-transparent px-6 text-center font-mono text-5xl tracking-widest outline-none focus:border-ring focus:ring-4 focus:ring-ring/30"
           />
-          <Button type="submit" disabled={busy} className="h-24 rounded-xl px-10 text-2xl">
+          <Button type="submit" disabled={busy} className="h-24 px-10 font-heading text-2xl">
             {busy ? t("checking") : t("submit")}
           </Button>
         </form>
@@ -149,33 +150,49 @@ export function Scanner({
           type="button"
           onClick={dismiss}
           className={cn(
-            "fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 px-10 text-center text-white",
-            outcome.kind === "ok" ? "bg-emerald-600" : outcome.kind === "duplicate" ? "bg-amber-500" : "bg-red-600",
+            "fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 px-10 text-center",
+            outcome.kind === "ok"
+              ? "bg-muted text-foreground"
+              : outcome.kind === "duplicate"
+                ? "bg-warning text-warning-foreground"
+                : "bg-accent text-destructive",
           )}
         >
           {outcome.kind === "ok" ? (
-            <>
-              <CheckCircle2 className="size-32" aria-hidden />
-              <p className="text-4xl font-semibold">{t("ok")}</p>
-              {outcome.nickname ? <p className="text-7xl font-bold">{outcome.nickname}</p> : null}
-              <p className={outcome.nickname ? "text-4xl" : "text-6xl font-bold"}>{outcome.name}</p>
-              <p className="mt-4 text-5xl font-semibold">
-                {outcome.remaining === null ? t("unlimited") : t("remaining", { count: outcome.remaining })}
-              </p>
-            </>
+            <div className="flex flex-col items-center gap-8 rounded-[2.5rem] bg-white px-16 py-12 sm:flex-row sm:text-left">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex size-60 items-center justify-center rounded-full border-8 border-[#F2C14E] bg-white">
+                  <Mascot className="h-52" />
+                </div>
+                <p className="flex items-center gap-2 rounded-full bg-success px-5 py-1.5 font-heading text-2xl text-success-foreground">
+                  <CheckCircle2 className="size-6" aria-hidden /> {t("ok")}
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-3 sm:items-start">
+                {outcome.nickname ? (
+                  <p className="font-heading text-8xl text-accent-foreground">{outcome.nickname}</p>
+                ) : null}
+                <p className={outcome.nickname ? "text-3xl text-muted-foreground" : "font-heading text-6xl text-accent-foreground"}>
+                  {outcome.name}
+                </p>
+                <p className="mt-2 rounded-full bg-primary px-8 py-3 font-heading text-4xl text-primary-foreground">
+                  {outcome.remaining === null ? t("unlimited") : t("remaining", { count: outcome.remaining })}
+                </p>
+              </div>
+            </div>
           ) : outcome.kind === "duplicate" ? (
             <>
               <CircleAlert className="size-32" aria-hidden />
-              <p className="text-6xl font-bold">{t("duplicate")}</p>
+              <p className="font-heading text-6xl">{t("duplicate")}</p>
             </>
           ) : (
             <>
               <XCircle className="size-32" aria-hidden />
-              <p className="text-4xl font-semibold">{t("rejected")}</p>
+              <p className="font-heading text-4xl">{t("rejected")}</p>
               {outcome.nickname || outcome.name ? (
-                <p className="text-5xl font-bold">{[outcome.nickname, outcome.name].filter(Boolean).join(" · ")}</p>
+                <p className="text-5xl font-semibold">{[outcome.nickname, outcome.name].filter(Boolean).join(" · ")}</p>
               ) : null}
-              <p className="text-6xl font-bold">{outcome.problem}</p>
+              <p className="font-heading text-6xl">{outcome.problem}</p>
             </>
           )}
           <p className="absolute bottom-8 text-xl opacity-80">{t("tapToClose")}</p>

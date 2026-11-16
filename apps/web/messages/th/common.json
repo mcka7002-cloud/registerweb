@@ -1,7 +1,9 @@
 {
   "app": {
     "name": "RegisterWeb",
-    "tagline": "ระบบโรงเรียนเทควันโด"
+    "tagline": "ระบบโรงเรียนเทควันโด",
+    "logoAlt": "PANIPAK TAEKWONDO",
+    "home": "หน้าหลัก PANIPAK TAEKWONDO"
   },
   "roles": {
     "admin": "ผู้ดูแลระบบ",
