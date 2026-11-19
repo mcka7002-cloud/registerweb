@@ -15,6 +15,8 @@ export interface MyRegistration {
   rejectReason: string | null;
   branchName: string | null;
   studentName: string;
+  /** Booked trial class (only while `trial_booked`). */
+  trial: { classDate: string; startsAt: string; endsAt: string } | null;
 }
 
 export async function listBranches(): Promise<BranchOption[]> {
@@ -29,7 +31,9 @@ export async function listMyRegistrations(accountId: string): Promise<MyRegistra
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("registrations")
-    .select("id, status, created_at, reject_reason, payload, branches(name)")
+    .select(
+      "id, status, created_at, reject_reason, payload, branches(name), class_sessions!registrations_trial_session_id_fkey(class_date, starts_at, ends_at)",
+    )
     .eq("account_id", accountId)
     .order("created_at", { ascending: false });
   if (error) console.error("[listMyRegistrations]", error);
@@ -46,6 +50,10 @@ export async function listMyRegistrations(accountId: string): Promise<MyRegistra
       rejectReason: r.reject_reason,
       branchName: r.branches?.name ?? null,
       studentName: nickname ? `${name} (${nickname})` : name,
+      trial:
+        r.status === "trial_booked" && r.class_sessions
+          ? { classDate: r.class_sessions.class_date, startsAt: r.class_sessions.starts_at, endsAt: r.class_sessions.ends_at }
+          : null,
     };
   });
 }

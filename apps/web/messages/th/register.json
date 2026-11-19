@@ -64,7 +64,8 @@
     "title": "ใบสมัครของฉัน",
     "empty": "ยังไม่มีใบสมัคร",
     "submittedOn": "ส่งเมื่อ {date}",
-    "rejectReason": "เหตุผล: {reason}"
+    "rejectReason": "เหตุผล: {reason}",
+    "trial": "นัดทดลองเรียน {date} เวลา {time} น."
   },
   "status": {
     "pending": "รอครูตรวจสอบ",

@@ -39,7 +39,16 @@ interface GuardianForm {
 const str = (v: unknown) => (v == null ? "" : String(v));
 const NO_GENDER = "none";
 
-export function ApproveForm({ registrationId, payload }: { registrationId: string; payload: RegistrationPayload }) {
+export function ApproveForm({
+  registrationId,
+  payload,
+  recommendedTemplateId = null,
+}: {
+  registrationId: string;
+  payload: RegistrationPayload;
+  /** From the trial assessment; the student page pre-selects it in "ขายแพ็กเกจ" (`?template=`). */
+  recommendedTemplateId?: string | null;
+}) {
   const t = useTranslations("students");
   const router = useRouter();
   const { pending, run } = useRunAction();
@@ -84,7 +93,8 @@ export function ApproveForm({ registrationId, payload }: { registrationId: strin
         }),
       (d) => {
         toast.success(t("review.approved", { code: d.code }));
-        router.push(`/staff/students/${d.student_id}`);
+        const query = recommendedTemplateId ? `?template=${encodeURIComponent(recommendedTemplateId)}` : "";
+        router.push(`/staff/students/${d.student_id}${query}`);
       },
     );
   }
