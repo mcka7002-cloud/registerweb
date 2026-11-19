@@ -15,3 +15,4 @@ packages/db/supabase/.temp
 
 # Claude Code sub-agent worktrees
 .claude/worktrees/
+exports/
