@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, ChevronDown, Clock, ShoppingCart, XCircle } from "lucide-react";
+import { AlertTriangle, ChevronDown, Clock, IdCard, ShoppingCart, XCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { addDays } from "@registerweb/domain";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ async function ExamProgress({ done, required }: { done: number; required: number
 
 /** One student: a short summary that is always visible, and the full history behind "ดูรายละเอียด". */
 export async function StudentCard({ student: s, photo }: { student: PortalStudent; photo?: React.ReactNode }) {
-  const t = await getTranslations("portal");
+  const [t, tcard] = await Promise.all([getTranslations("portal"), getTranslations("card")]);
   const today = todayInBangkok();
   const exp = s.membershipExpiresOn;
   const membershipState = !exp ? "none" : exp < today ? "expired" : exp <= addDays(today, 30) ? "soon" : "ok";
@@ -138,6 +138,11 @@ export async function StudentCard({ student: s, photo }: { student: PortalStuden
           <Button asChild className="h-11 w-full sm:h-9 sm:w-auto">
             <Link href={`/portal/buy/${s.id}`}>
               <ShoppingCart /> {t("buy")}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-11 w-full sm:h-9 sm:w-auto">
+            <Link href={`/portal/card/${s.id}`}>
+              <IdCard /> {tcard("title")}
             </Link>
           </Button>
         </div>
