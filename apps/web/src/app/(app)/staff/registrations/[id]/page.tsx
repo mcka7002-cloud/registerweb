@@ -14,6 +14,7 @@ import { BookTrialDialog } from "@/features/trial/components/book-trial-dialog";
 import { TrialSummary } from "@/features/trial/components/trial-summary";
 import { getTrialInfo, listUpcomingSessions } from "@/features/trial/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
+import { formatThaiDate } from "@/lib/utils";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -45,7 +46,13 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
   const { guardians, photo_path, ...fields } = reg.payload;
   const fullName = [reg.payload.first_name, reg.payload.last_name].filter(Boolean).join(" ");
   const label = (k: string) => (t.has(`fields.${k}`) ? t(`fields.${k}`) : k);
-  const show = (v: unknown) => (v == null || v === "" ? "–" : typeof v === "object" ? JSON.stringify(v) : String(v));
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const show = (k: string, v: unknown) => {
+    if (v == null || v === "") return "–";
+    if (k === "gender" && typeof v === "string" && t.has(`genders.${v}`)) return t(`genders.${v}`);
+    if (typeof v === "string" && ISO_DATE.test(v)) return formatThaiDate(v);
+    return typeof v === "object" ? JSON.stringify(v) : String(v);
+  };
 
   return (
     <>
@@ -133,7 +140,7 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
                 {Object.entries(fields).map(([k, v]) => (
                   <div key={k} className="contents">
                     <dt className="text-muted-foreground">{label(k)}</dt>
-                    <dd className="break-words">{show(v)}</dd>
+                    <dd className="break-words">{show(k, v)}</dd>
                   </div>
                 ))}
               </dl>
