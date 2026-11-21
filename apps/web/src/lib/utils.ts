@@ -35,6 +35,16 @@ export const ERROR_CODES = [
   "FIELDS_REQUIRED",
   "SLIP_REQUIRED",
   "ORDER_PENDING",
+  "TEACHER_NOT_IN_BRANCH",
+  "ALREADY_VOID",
+  "NOT_TRIAL_BOOKED",
+  "VOID_PENDING",
+  "NOT_REQUESTED",
+  "PACKAGE_IN_USE",
+  "BAD_INPUT",
+  "ACCOUNT_NOT_FOUND",
+  "ALREADY_LINKED",
+  "ACCOUNT_LIMIT",
   "UNKNOWN",
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];

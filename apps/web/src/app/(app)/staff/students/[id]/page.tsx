@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IdCard } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
@@ -14,6 +15,7 @@ import { CancelBookingButton } from "@/features/booking/components/cancel-bookin
 import { listUpcomingBookings, listUpcomingSessions, type SessionOption } from "@/features/booking/queries";
 import { SellPackageDialog } from "@/features/sales/components/sell-package-dialog";
 import { getSaleContext } from "@/features/sales/queries";
+import { LinkParentDialog } from "@/features/import/components/link-parent-dialog";
 import { EditStudentDialog } from "@/features/students/components/edit-student-dialog";
 import { getStudentPhotoPath, StudentPhoto } from "@/features/students/components/student-photo";
 import { getStudent, listStudentPackages } from "@/features/students/queries";
@@ -22,10 +24,22 @@ import { formatThaiDate, todayInBangkok } from "@/lib/utils";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default async function StudentPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function StudentPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ template?: string }>;
+}) {
   await requireRole(...STAFF_ROLES);
   const { id } = await params;
-  const [t, tb, tc] = await Promise.all([getTranslations("students"), getTranslations("booking"), getTranslations()]);
+  const { template: recommendedTemplateId } = await searchParams;
+  const [t, tb, tc, tcard] = await Promise.all([
+    getTranslations("students"),
+    getTranslations("booking"),
+    getTranslations(),
+    getTranslations("card"),
+  ]);
   const student = UUID.test(id) ? await getStudent(id) : null;
 
   if (!student) {
@@ -89,6 +103,7 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
               context={saleContext}
               hasMembership={expiry != null}
               membershipDue={membershipDue}
+              defaultTemplateId={recommendedTemplateId}
               studentLabel={
                 <>
                   <span className="font-medium">
@@ -105,6 +120,12 @@ export default async function StudentPage({ params }: { params: Promise<{ id: st
               sessionsByBranch={sessionsByBranch}
               bookedSessionIds={bookings.map((b) => b.class_session_id)}
             />
+            <LinkParentDialog studentId={student.id} />
+            <Button asChild variant="outline">
+              <Link href={`/staff/students/${student.id}/card`}>
+                <IdCard /> {tcard("title")}
+              </Link>
+            </Button>
           </>
         }
       />

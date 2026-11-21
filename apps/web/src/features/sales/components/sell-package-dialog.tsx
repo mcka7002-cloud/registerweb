@@ -32,6 +32,7 @@ export function SellPackageDialog({
   hasMembership,
   membershipDue,
   studentLabel,
+  defaultTemplateId,
 }: {
   studentId: string;
   context: SaleContext;
@@ -41,11 +42,16 @@ export function SellPackageDialog({
   membershipDue: boolean;
   /** name + belt chip shown in a tinted strip under the title */
   studentLabel?: React.ReactNode;
+  /** pre-selected package, e.g. the one recommended in the trial assessment */
+  defaultTemplateId?: string;
 }) {
   const t = useTranslations("sales");
   const tc = useTranslations();
   const [open, setOpen] = useState(false);
-  const [templateId, setTemplateId] = useState(context.templates[0]?.id ?? "");
+  const firstTemplateId = context.templates.some((x) => x.id === defaultTemplateId)
+    ? defaultTemplateId!
+    : (context.templates[0]?.id ?? "");
+  const [templateId, setTemplateId] = useState(firstTemplateId);
   const [withMembership, setWithMembership] = useState(membershipDue);
   const [method, setMethod] = useState<Method>("cash");
   const [result, setResult] = useState<SellResult | null>(null);
@@ -61,7 +67,7 @@ export function SellPackageDialog({
       setResult(null);
       setWithMembership(membershipDue);
       setMethod("cash");
-      setTemplateId((id) => (context.templates.some((x) => x.id === id) ? id : (context.templates[0]?.id ?? "")));
+      setTemplateId((id) => (context.templates.some((x) => x.id === id) ? id : firstTemplateId));
     }
     setOpen(next);
   }

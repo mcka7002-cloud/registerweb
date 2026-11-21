@@ -10,15 +10,19 @@ import { RejectForm } from "@/features/students/components/reject-form";
 import { StudentPhoto } from "@/features/students/components/student-photo";
 import { formatThaiDateTime } from "@/features/students/format";
 import { getRegistration, type Guardian } from "@/features/students/queries";
+import { BookTrialDialog } from "@/features/trial/components/book-trial-dialog";
+import { TrialSummary } from "@/features/trial/components/trial-summary";
+import { getTrialInfo, listUpcomingSessions } from "@/features/trial/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
+import { formatThaiDate } from "@/lib/utils";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async function RegistrationReviewPage({ params }: { params: Promise<{ id: string }> }) {
   await requireRole(...STAFF_ROLES);
   const { id } = await params;
-  const [t, tc] = await Promise.all([getTranslations("students"), getTranslations()]);
-  const reg = UUID.test(id) ? await getRegistration(id) : null;
+  const [t, tc, tt] = await Promise.all([getTranslations("students"), getTranslations(), getTranslations("trial")]);
+  const [reg, trial] = UUID.test(id) ? await Promise.all([getRegistration(id), getTrialInfo(id)]) : [null, null];
 
   if (!reg) {
     return (
@@ -37,10 +41,18 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
   }
 
   const open = reg.status === "pending" || reg.status === "trial_booked";
+  const sessions = open && trial ? await listUpcomingSessions(trial.branchId) : [];
+  const recommendedTemplateId = trial?.notes?.recommended_template_id ?? null;
   const { guardians, photo_path, ...fields } = reg.payload;
   const fullName = [reg.payload.first_name, reg.payload.last_name].filter(Boolean).join(" ");
   const label = (k: string) => (t.has(`fields.${k}`) ? t(`fields.${k}`) : k);
-  const show = (v: unknown) => (v == null || v === "" ? "–" : typeof v === "object" ? JSON.stringify(v) : String(v));
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const show = (k: string, v: unknown) => {
+    if (v == null || v === "") return "–";
+    if (k === "gender" && typeof v === "string" && t.has(`genders.${v}`)) return t(`genders.${v}`);
+    if (typeof v === "string" && ISO_DATE.test(v)) return formatThaiDate(v);
+    return typeof v === "object" ? JSON.stringify(v) : String(v);
+  };
 
   return (
     <>
@@ -50,7 +62,15 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
         actions={
           <Badge
             variant="secondary"
-            className={reg.status === "pending" ? "bg-warning text-warning-foreground" : reg.status === "approved" ? "bg-success text-success-foreground" : undefined}
+            className={
+              reg.status === "pending"
+                ? "bg-warning text-warning-foreground"
+                : reg.status === "approved"
+                  ? "bg-success text-success-foreground"
+                  : reg.status === "trial_booked"
+                    ? "bg-accent text-accent-foreground"
+                    : undefined
+            }
           >
             {t(`registrations.statuses.${reg.status}`)}
           </Badge>
@@ -76,15 +96,36 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
                 <dd>{reg.pdpa_consent ? t("review.yes") : t("review.no")}</dd>
                 <dt className="text-muted-foreground">{t("review.publish")}</dt>
                 <dd>{reg.publish_consent ? t("review.yes") : t("review.no")}</dd>
-                {reg.trial_at ? (
-                  <>
-                    <dt className="text-muted-foreground">{t("registrations.trialAt")}</dt>
-                    <dd>{formatThaiDateTime(reg.trial_at)}</dd>
-                  </>
-                ) : null}
               </dl>
             </CardContent>
           </Card>
+          {trial ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>{tt("card.title")}</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                <TrialSummary info={trial} />
+                {open ? (
+                  <div className="flex flex-wrap gap-3">
+                    <BookTrialDialog
+                      registrationId={reg.id}
+                      branchName={trial.branchName}
+                      sessions={sessions}
+                      currentSessionId={reg.status === "trial_booked" ? (trial.session?.id ?? null) : null}
+                    />
+                    {reg.status === "trial_booked" ? (
+                      <Button asChild size="lg">
+                        <Link href={`/staff/trials/${reg.id}`}>
+                          {trial.notes ? tt("editAssessment") : tt("assess")}
+                        </Link>
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
+          ) : null}
           <Card>
             <CardHeader>
               <CardTitle>{t("review.payload")}</CardTitle>
@@ -99,7 +140,7 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
                 {Object.entries(fields).map(([k, v]) => (
                   <div key={k} className="contents">
                     <dt className="text-muted-foreground">{label(k)}</dt>
-                    <dd className="break-words">{show(v)}</dd>
+                    <dd className="break-words">{show(k, v)}</dd>
                   </div>
                 ))}
               </dl>
@@ -120,13 +161,13 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
 
         {open ? (
           <div className="grid content-start gap-6">
-            <Card>
+            <Card id="approve" className="scroll-mt-6">
               <CardHeader>
                 <CardTitle>{t("review.approveTitle")}</CardTitle>
                 <CardDescription>{t("review.approveHint")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <ApproveForm registrationId={reg.id} payload={reg.payload} />
+                <ApproveForm registrationId={reg.id} payload={reg.payload} recommendedTemplateId={recommendedTemplateId} />
               </CardContent>
             </Card>
             <Card>
@@ -150,9 +191,19 @@ export default async function RegistrationReviewPage({ params }: { params: Promi
                 </p>
               ) : null}
               {reg.student_id ? (
-                <Button asChild className="justify-self-start">
-                  <Link href={`/staff/students/${reg.student_id}`}>{t("review.openStudent")}</Link>
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild>
+                    <Link href={`/staff/students/${reg.student_id}`}>{t("review.openStudent")}</Link>
+                  </Button>
+                  {recommendedTemplateId ? (
+                    <Button asChild variant="outline">
+                      <Link href={`/staff/students/${reg.student_id}?template=${recommendedTemplateId}`}>
+                        {tt("card.sellRecommended")}
+                        {trial?.recommendedName ? ` · ${trial.recommendedName}` : ""}
+                      </Link>
+                    </Button>
+                  ) : null}
+                </div>
               ) : null}
             </CardContent>
           </Card>
