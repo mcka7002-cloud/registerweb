@@ -309,6 +309,15 @@ export function RegistrationForm({ branches }: { branches: BranchOption[] }) {
                 <span className="block text-muted-foreground">{t("fields.pdpa")}</span>
               </span>
             </label>
+            {/* Outside the label so tapping the link doesn't tick the box; new tab keeps the half-filled form. */}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener"
+              className="ml-8 text-sm font-medium text-primary underline underline-offset-4"
+            >
+              {t("fields.pdpaLink")}
+            </a>
             <FieldError name="pdpa_consent" invalid={invalid} />
           </div>
           <label className="flex items-start gap-3 text-sm leading-relaxed">

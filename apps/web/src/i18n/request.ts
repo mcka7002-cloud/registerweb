@@ -1,7 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 
 /** Feature namespaces; each is loaded from messages/th/<feature>.json under its own key. */
-export const FEATURE_NAMESPACES = ["admin", "students", "sales", "booking", "checkin", "portal", "register", "payments", "attendance", "trial", "control", "card", "import"] as const;
+export const FEATURE_NAMESPACES = ["admin", "students", "sales", "booking", "checkin", "portal", "register", "payments", "attendance", "trial", "control", "card", "import", "privacy"] as const;
 
 // Thai only, no locale in the URL.
 export default getRequestConfig(async () => {
