@@ -1,0 +1,18 @@
+// Cloudflare Workers config for apps/site (OpenNext). See docs/adr/0002-hosting-cloudflare.md.
+// Top level = local preview (`pnpm preview`). Deploys use --env staging | production, which name the
+// Worker registerweb-site-staging / registerweb-site-production.
+// Custom domains: add "routes": [{ "pattern": "<host>", "custom_domain": true }] per env once the school's
+// domain is on Cloudflare (docs/deploy-th.md).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "registerweb-site",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "env": {
+    "staging": {},
+    "production": {}
+  }
+}

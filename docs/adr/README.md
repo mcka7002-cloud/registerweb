@@ -6,3 +6,4 @@ record a change of mind as a new ADR that supersedes it.
 | # | Title | Status |
 |---|---|---|
 | [0001](0001-stack-and-architecture.md) | Tech stack and architecture for a 1–3 developer team | Proposed |
+| [0002](0002-hosting-cloudflare.md) | Host on Cloudflare Workers with a lean Supabase prod | Proposed |

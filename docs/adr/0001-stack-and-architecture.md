@@ -4,6 +4,7 @@
 - **Date:** 2026-11-13
 - **Deciders:** RegisterWeb team
 - **Context source:** Spec v1 (locked 12 Nov 2026), repo review of commit `bdcd2fd`
+- **Superseded in part by:** [ADR 0002](0002-hosting-cloudflare.md) (hosting moves from Vercel to Cloudflare Workers; §6 cron route and §7 delivery)
 
 ## Context
 
