@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { BrandLogo } from "@/components/brand";
@@ -24,6 +25,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { error } = await searchParams;
   const t = await getTranslations("auth");
   const tApp = await getTranslations("app");
+  const tPrivacy = await getTranslations("privacy");
   const devLogin = process.env.NEXT_PUBLIC_DEV_LOGIN === "1";
   const errorText =
     error === "credentials" ? t("invalidCredentials") : error === "oauth" ? t("oauthFailed") : null;
@@ -70,6 +72,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           ) : null}
         </CardContent>
       </Card>
+      <footer className="text-sm text-muted-foreground">
+        <Link href="/privacy" className="underline underline-offset-4">
+          {tPrivacy("footerLink")}
+        </Link>
+      </footer>
     </main>
   );
 }
