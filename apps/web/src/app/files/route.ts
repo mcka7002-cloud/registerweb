@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-const HEADERS = { "cache-control": "private, max-age=600", "x-content-type-options": "nosniff" };
+const HEADERS = { "cache-control": "private, no-store", "x-content-type-options": "nosniff" };
 const notFound = () => new Response(null, { status: 404, headers: { "cache-control": "no-store" } });
 
 /** GET /files?b=<bucket>&p=<path>: a slip or student photo, for users the access rule allows (404 otherwise). */

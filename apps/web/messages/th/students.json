@@ -121,7 +121,8 @@
     "validUntil": "ใช้ได้ถึง {date}",
     "packageStatus": {
       "active": "ใช้งาน",
-      "expired": "หมดอายุ"
+      "expired": "หมดอายุ",
+      "void": "ยกเลิกแล้ว"
     },
     "guardians": "ผู้ปกครอง",
     "noGuardians": "ไม่มีข้อมูลผู้ปกครอง",
