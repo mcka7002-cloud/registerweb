@@ -17,7 +17,7 @@
 | `packages/domain` | กฎธุรกิจแบบ pure function + unit test (vitest) |
 | `packages/db` | Supabase: migrations, RLS, ฟังก์ชันฝั่ง server, SQL test |
 
-Stack: Next.js (App Router) · Supabase (Postgres, Auth ด้วย Google, Storage, pg_cron) · shadcn/ui + Tailwind · next-intl · Serwist (PWA) · Vercel · pnpm + Turborepo
+Stack: Next.js (App Router) · Supabase (Postgres, Auth ด้วย Google, Storage, pg_cron) · shadcn/ui + Tailwind · next-intl · Serwist (PWA) · Cloudflare Workers (OpenNext, [ADR 0002](docs/adr/0002-hosting-cloudflare.md), [คู่มือขึ้นระบบ](docs/deploy-th.md)) · pnpm + Turborepo
 
 ## เริ่มต้น
 

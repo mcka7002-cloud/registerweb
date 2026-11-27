@@ -46,9 +46,15 @@ jobs:
           done
           if [ -n "${DEV_LOGIN:-}" ]; then echo "::error::NEXT_PUBLIC_DEV_LOGIN must never be set on a cloud environment"; exit 1; fi
           case "$NEXT_PUBLIC_SUPABASE_URL" in *"$SUPABASE_PROJECT_REF"*) ;; *) echo "::error::Supabase URL does not match the project ref"; exit 1;; esac
-          # The anon key must be an anon key (a service_role JWT here would ship to every browser).
-          role=$(python3 -c 'import base64,json,os; p=os.environ["NEXT_PUBLIC_SUPABASE_ANON_KEY"].split(".")[1]; print(json.loads(base64.urlsafe_b64decode(p+"=="*2)).get("role",""))' 2>/dev/null || echo "?")
-          if [ "$role" != "anon" ]; then echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY is not an anon key (role: $role)"; exit 1; fi
+          # The browser key must be public: a publishable key (sb_publishable_…) or a legacy anon JWT.
+          # A secret key (sb_secret_… or a service_role JWT) here would ship to every browser.
+          case "$NEXT_PUBLIC_SUPABASE_ANON_KEY" in
+            sb_publishable_*) ;;
+            sb_secret_*) echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY is a secret key"; exit 1;;
+            *)
+              role=$(python3 -c 'import base64,json,os; p=os.environ["NEXT_PUBLIC_SUPABASE_ANON_KEY"].split(".")[1]; print(json.loads(base64.urlsafe_b64decode(p+"=="*2)).get("role",""))' 2>/dev/null || echo "?")
+              if [ "$role" != "anon" ]; then echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY is not a public key (role: $role)"; exit 1; fi;;
+          esac
 
       - name: Supabase security advisor (prod)
         if: inputs.environment == 'production'
@@ -79,8 +85,8 @@ jobs:
       - name: Bundle guard (no server secrets in browser assets)
         run: |
           set -euo pipefail
-          # "service_role" as it appears inside a base64 JWT payload, plus the env var names.
-          if grep -rlE 'c2VydmljZV9yb2xl|SUPABASE_SERVICE_ROLE_KEY|SUPABASE_DB_PASSWORD' apps/web/.open-next/assets apps/site/.open-next/assets; then
+          # Secret API keys, "service_role" inside a base64 JWT payload, and the server env var names.
+          if grep -rlE 'sb_secret_|c2VydmljZV9yb2xl|SUPABASE_SERVICE_ROLE_KEY|SUPABASE_DB_PASSWORD' apps/web/.open-next/assets apps/site/.open-next/assets; then
             echo "::error::server secret found in browser assets"; exit 1
           fi
 
