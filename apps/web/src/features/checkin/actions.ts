@@ -15,9 +15,9 @@ export interface CheckinResult {
 }
 
 const checkinSchema = z.object({
-  clientUuid: z.string().uuid(),
-  branchId: z.string().uuid(),
-  sessionId: z.string().uuid(),
+  clientUuid: z.guid(),
+  branchId: z.guid(),
+  sessionId: z.guid(),
   barcode: z.string().trim().min(1).max(64),
   scannedAt: z.string().datetime({ offset: true }),
 });

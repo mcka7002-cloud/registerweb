@@ -18,7 +18,7 @@ const optionalPhone = z
 
 /** Fields of the registration form (FormData entries, as strings). Keys double as error keys in register.json. */
 export const registrationSchema = z.object({
-  branch_id: z.string().uuid(),
+  branch_id: z.guid(),
   first_name: text(100),
   last_name: text(100),
   first_name_en: text(100),

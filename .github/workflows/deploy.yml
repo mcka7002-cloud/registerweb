@@ -1,0 +1,40 @@
+name: Deploy
+
+# Staging: run by hand (Actions → Deploy → Run workflow, pick a branch). Staging Supabase may be paused
+# between MA jobs, so nothing deploys to it automatically.
+# Prod: push a tag v* → security gate → approval (GitHub environment "production") → deploy.
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+concurrency:
+  group: deploy-${{ github.event_name == 'workflow_dispatch' && 'staging' || 'production' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  staging:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/deploy-env.yml
+    with:
+      environment: staging
+    secrets: inherit
+
+  security:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+  production:
+    needs: security
+    uses: ./.github/workflows/deploy-env.yml
+    with:
+      environment: production
+    secrets: inherit

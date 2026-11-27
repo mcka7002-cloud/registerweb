@@ -20,8 +20,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      # ยังไม่มี lockfile ใน commit แรก: รัน `pnpm install` ในเครื่องแล้ว commit pnpm-lock.yaml จากนั้นเปลี่ยนเป็น --frozen-lockfile
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build

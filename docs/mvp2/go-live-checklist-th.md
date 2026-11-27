@@ -1,14 +1,18 @@
 # เช็กลิสต์ก่อนเปิดใช้งานจริง (ทดสอบด้วยข้อมูลจริง)
 
-ทำบน Supabase + Vercel ของจริง ทีละข้อ ติ๊กเมื่อผ่าน ข้อที่ไม่ผ่านให้จดไว้และแก้ก่อนเปิดใช้
+ทำบน Supabase + Cloudflare ของจริง ทีละข้อ ติ๊กเมื่อผ่าน ข้อที่ไม่ผ่านให้จดไว้และแก้ก่อนเปิดใช้ · วิธีตั้งค่าและ deploy อยู่ใน [คู่มือขึ้นระบบ](../deploy-th.md)
 
 ## A. ระบบ (admin / ผู้พัฒนา)
 
-- [ ] migration ล่าสุดขึ้น cloud แล้ว (`supabase db push --linked --dry-run` ไม่มีรายการค้าง)
+- [ ] ขึ้น prod ด้วย tag `v*` และงาน **Security** ผ่านทุกข้อ (ห้ามข้าม) · migration ล่าสุดขึ้นแล้ว (`supabase db push --linked --dry-run` ไม่มีรายการค้าง)
+- [ ] โปรเจกต์ prod ถูกตัว: `SUPABASE_PROJECT_REF` ของ environment production ตรงกับโปรเจกต์ของโรงเรียน (ไม่ใช่ staging)
 - [ ] `select jobname, schedule from cron.job` มี `registerweb-nightly` `30 17 * * *`
-- [ ] Vercel: ไม่มีตัวแปร `NEXT_PUBLIC_DEV_LOGIN` · Google sign-in ใช้ได้
+- [ ] GitHub environment production: ไม่มีตัวแปร `NEXT_PUBLIC_DEV_LOGIN` · Google sign-in ใช้ได้ที่ `app.<โดเมน>`
 - [ ] **ไม่ได้รัน `seed.sql` บน cloud** (มีผู้ใช้ `@demo.test` = ต้องลบโปรเจกต์ทดสอบนั้นทิ้ง)
-- [ ] สำรองข้อมูล: เปิด backup ของ Supabase (Point in time หรือ Daily)
+- [ ] สำรองข้อมูล: งาน **Prod DB backup** ผ่าน และมีไฟล์ใน R2 `registerweb-backups` · ทดสอบกู้บน staging แล้ว · โรงเรียนเก็บ `BACKUP_PASSPHRASE` ไว้
+- [ ] งาน **Prod health check** ผ่าน · สลิปทดสอบเปิดได้เฉพาะผู้ปกครองเจ้าของและครูสาขาเดียวกัน
+- [ ] PDPA: เซ็น DPA ของ Supabase และ Cloudflare แล้ว · หน้า `/privacy` และข้อความยินยอมระบุว่าเก็บข้อมูลที่สิงคโปร์ (ทนายตรวจแล้ว)
+- [ ] ตรวจสิทธิ์เข้าถึงตามการ์ด #73 (ทุก role และสมาชิกบัญชี Cloudflare / Supabase / GitHub / Google)
 
 ## B. ตั้งค่าโรงเรียน (admin)
 

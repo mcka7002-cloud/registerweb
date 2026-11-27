@@ -13,7 +13,7 @@ const rowSchema = z.object(
   Object.fromEntries(IMPORT_COLUMNS.map((c) => [c, cell])) as Record<ImportColumn, typeof cell>,
 );
 const importSchema = z.object({
-  branchId: z.string().uuid(),
+  branchId: z.guid(),
   rows: z.array(rowSchema).min(1).max(MAX_IMPORT_ROWS),
   commit: z.boolean(),
 });
@@ -43,7 +43,7 @@ export async function importStudents(input: ImportInput): Promise<RpcResult<Impo
 }
 
 const linkSchema = z.object({
-  studentId: z.string().uuid(),
+  studentId: z.guid(),
   email: z.string().trim().email(),
 });
 

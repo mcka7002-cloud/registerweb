@@ -5,7 +5,7 @@ import { z } from "zod";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
 
-const uuid = z.string().uuid();
+const uuid = z.guid();
 const reason = z.string().trim().min(1).max(500);
 
 function refresh(sessionId: string) {

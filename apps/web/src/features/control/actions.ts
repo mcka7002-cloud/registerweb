@@ -6,7 +6,7 @@ import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
 
 const requestSchema = z.object({
-  document_id: z.string().uuid(),
+  document_id: z.guid(),
   reason: z.string().trim().max(500),
 });
 export type RequestVoidInput = z.input<typeof requestSchema>;
@@ -29,7 +29,7 @@ export async function requestVoid(input: RequestVoidInput): Promise<RpcResult<Re
 }
 
 const reviewSchema = z.object({
-  document_id: z.string().uuid(),
+  document_id: z.guid(),
   approve: z.boolean(),
   reason: z.string().trim().max(500).optional(),
 });

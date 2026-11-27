@@ -5,7 +5,7 @@ import { z } from "zod";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
 
-const uuid = z.string().uuid();
+const uuid = z.guid();
 
 const bookSchema = z.object({
   student_id: uuid,

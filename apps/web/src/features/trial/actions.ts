@@ -17,7 +17,7 @@ function revalidateTrial(registrationId: string) {
   revalidatePath("/portal");
 }
 
-const bookSchema = z.object({ registration_id: z.string().uuid(), session_id: z.string().uuid() });
+const bookSchema = z.object({ registration_id: z.guid(), session_id: z.guid() });
 
 export async function bookTrial(input: z.input<typeof bookSchema>): Promise<RpcResult<{ trial_at: string }>> {
   await requireRole(...STAFF_ROLES);
@@ -34,7 +34,7 @@ export async function bookTrial(input: z.input<typeof bookSchema>): Promise<RpcR
 const score = z.number().int().min(1).max(5);
 const recordSchema = z
   .object({
-    registration_id: z.string().uuid(),
+    registration_id: z.guid(),
     attended: z.boolean(),
     scores: z.object({
       flexibility: score.nullable(),
@@ -43,7 +43,7 @@ const recordSchema = z
       listening: score.nullable(),
     }),
     note: z.string().trim().max(2000),
-    recommended_template_id: z.string().uuid().nullable(),
+    recommended_template_id: z.guid().nullable(),
   })
   .refine((v) => !v.attended || Object.values(v.scores).every((s) => s != null));
 

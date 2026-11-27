@@ -1,13 +1,13 @@
 import type { VatSettings } from "@registerweb/domain";
 import type { Database } from "@/lib/database.types";
 import { callRpc } from "@/lib/rpc";
+import { fileUrl } from "@/lib/files/access";
 import { createClient } from "@/lib/supabase/server";
 import { todayInBangkok } from "@/lib/utils";
 
 export type PaymentMethod = Database["public"]["Enums"]["payment_method"];
 
 const one = <T>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? (v[0] ?? null) : (v ?? null));
-const SIGNED_URL_SECONDS = 600;
 
 // ---------- parent: purchase options ----------
 
@@ -107,7 +107,7 @@ function studentLabels(items: ReviewItem[]): string[] {
   return [...new Set(items.flatMap((i) => (i.student ? [`${i.student.code} ${i.student.name}`] : [])))];
 }
 
-/** Orders waiting for a slip review in the caller's branches (RLS scopes), newest first, with signed slip URLs. */
+/** Orders waiting for a slip review in the caller's branches (RLS scopes), newest first, with slip URLs. */
 export async function listPendingOrders(): Promise<PendingOrder[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -120,14 +120,6 @@ export async function listPendingOrders(): Promise<PendingOrder[]> {
   if (error) console.error("[listPendingOrders]", error);
   const rows = data ?? [];
 
-  const paths = rows.flatMap((o) => (o.slip_path ? [o.slip_path] : []));
-  const urls = new Map<string, string>();
-  if (paths.length > 0) {
-    const signed = await supabase.storage.from("slips").createSignedUrls(paths, SIGNED_URL_SECONDS);
-    if (signed.error) console.error("[listPendingOrders] signed urls", signed.error);
-    for (const s of signed.data ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
-  }
-
   return rows.map((o) => ({
     id: o.id,
     total: Number(o.total),
@@ -135,7 +127,7 @@ export async function listPendingOrders(): Promise<PendingOrder[]> {
     created_at: o.created_at,
     parent: one(o.account)?.full_name ?? null,
     branch: one(o.branches)?.name ?? null,
-    slipUrl: o.slip_path ? (urls.get(o.slip_path) ?? null) : null,
+    slipUrl: o.slip_path ? fileUrl("slips", o.slip_path) : null,
     items: mapItems(o.order_items as ItemRow[]),
   }));
 }

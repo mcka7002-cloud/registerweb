@@ -27,6 +27,21 @@ publishing anything.
   Card text uses IBM Plex Sans Thai (column titles are SemiBold; load it before editing them).
 - Figma changes follow the plan-first rule like any other change.
 
+## Stories and questions live in the RegisterWeb sheet
+
+Release notes, bugs and new stories go in the
+[RegisterWeb sheet](https://claude.ai/artifact/GN2xLJ3zUq46Ttyr7ooyQM) (tabs Release notes, Review / Bug,
+เพิ่ม Story-Feature).
+
+- Questions about a story (grilling, clarifications) are always written in the sheet's **คำถาม Story** tab,
+  never asked one by one in chat and never in a separate doc. Stories come from other people, who answer
+  in the sheet.
+- One row per question: ข้อ, Story, คำถาม, คำแนะนำ ★, ตัวเลือกอื่น, ตกลง (dropdown ตามแนะนำ / ไม่ใช่),
+  คำตอบ, ผู้ตอบ. A blank answer means the recommendation stands.
+- A new round goes under the last one with a yellow fill and a note in row 4. Read the answers from the
+  sheet before writing the next round or changing a story row.
+- Sheet writes follow the plan-first rule; a request to grill or to write questions approves that write.
+
 ## Every MVP ships with
 
 - Thai UI text (next-intl `messages/th`), no leftover English on screen.

@@ -4,8 +4,26 @@
     {
       "name": "web",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["-y", "pnpm@9.15.0", "--filter", "@registerweb/web", "dev"],
+      "runtimeArgs": [
+        "-y",
+        "pnpm@9.15.0",
+        "--filter",
+        "@registerweb/web",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "web-worker",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "-y",
+        "pnpm@9.15.0",
+        "--filter",
+        "@registerweb/web",
+        "preview"
+      ],
+      "port": 8787
     }
   ]
 }

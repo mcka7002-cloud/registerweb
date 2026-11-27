@@ -26,7 +26,7 @@ export default async function BuyPackagePage({ params }: { params: Promise<{ stu
     </Button>
   );
 
-  const options = z.string().uuid().safeParse(studentId).success ? await getPurchaseOptions(studentId) : null;
+  const options = z.guid().safeParse(studentId).success ? await getPurchaseOptions(studentId) : null;
   if (!options) {
     return (
       <>
