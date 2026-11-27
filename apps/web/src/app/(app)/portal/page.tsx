@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList, UserPlus } from "lucide-react";
+import { CalendarDays, ClipboardList, UserPlus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
@@ -14,7 +14,7 @@ import { formatThaiDate, todayInBangkok } from "@/lib/utils";
 
 export default async function PortalPage() {
   const me = await requireRole("customer");
-  const t = await getTranslations("portal");
+  const [t, tr] = await Promise.all([getTranslations("portal"), getTranslations("register")]);
   const [students, registrations] = await Promise.all([loadPortal(me.id), listMyRegistrations(me.id)]);
   const waiting = registrations.filter((r) => r.status === "pending" || r.status === "trial_booked");
 
@@ -45,6 +45,17 @@ export default async function PortalPage() {
                   <span className="text-muted-foreground">
                     {t("waiting.submitted", { date: formatThaiDate(todayInBangkok(new Date(r.createdAt))) })}
                   </span>
+                  {r.trial ? (
+                    <p className="flex w-full items-start gap-2 rounded-xl bg-accent px-3 py-2 text-accent-foreground">
+                      <CalendarDays className="mt-0.5 size-4 shrink-0" aria-hidden />
+                      <span>
+                        {tr("mine.trial", {
+                          date: formatThaiDate(r.trial.classDate, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+                          time: `${r.trial.startsAt.slice(0, 5)}–${r.trial.endsAt.slice(0, 5)}`,
+                        })}
+                      </span>
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ul>

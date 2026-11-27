@@ -1,4 +1,4 @@
--- RegisterWeb MVP1: demo data for a CLOUD project (Supabase SQL Editor)
+-- RegisterWeb MVP1 + MVP2: demo data for a CLOUD project (Supabase SQL Editor)
 --
 -- Safe for cloud: creates NO login accounts and stores NO passwords. It attaches demo data to real
 -- Google accounts that have already signed in to the app once (so their `profiles` row exists).
@@ -19,6 +19,8 @@
 --       ภูมิ   approved → 8-session package + membership (cash) → 4 classes booked
 --       ข้าวหอม approved → unlimited package + membership (transfer) → 3 classes booked
 --       ใบเตย  left pending, so you can approve it live in the demo
+--   * MVP2 (once, "demo_tag": "mvp2"): application กล้า with a trial class booked on the next class, and the
+--     teacher set as the teacher of every class from today on (so manual check-in works for them)
 --
 -- Note: receipts, payments and audit logs can't be deleted (by design), so there is no "undo" script.
 -- To start over, create a new Supabase project or reset the database from the dashboard.
@@ -45,6 +47,7 @@ declare
   v_reg_a   uuid := gen_random_uuid();
   v_reg_b   uuid := gen_random_uuid();
   v_reg_c   uuid := gen_random_uuid();
+  v_reg_d   uuid := gen_random_uuid();
   v_student uuid;
   v_package uuid;
   v_sale    jsonb;
@@ -159,6 +162,29 @@ begin
                                    order by class_date, starts_at limit 3) s));
     raise notice 'ข้าวหอม: receipt %', v_sale ->> 'doc_no';
     raise notice 'ใบเตย: left pending for a live approval';
+  end if;
+
+  -- ---------- 6. MVP2: trial booking + teachers of each class (once) ----------
+  if exists (select 1 from public.registrations where payload->>'demo_tag' = 'mvp2') then
+    raise notice 'MVP2 demo data already exists; skipped.';
+  else
+    insert into public.registrations (id, branch_id, account_id, payload, pdpa_consent, publish_consent, created_at) values
+      (v_reg_d, v_branch, v_parent,
+       '{"demo_tag":"mvp2","first_name":"ด.ช.กล้า","last_name":"ใจดี","first_name_en":"Kla","last_name_en":"Jaidee",
+         "nickname":"กล้า","birth_date":"2018-11-20","gender":"male",
+         "guardians":[{"full_name":"ผู้ปกครองตัวอย่าง","relation":"แม่","phones":["0800000001"]}]}',
+       true, false, now() - interval '1 day');
+    perform set_config('request.jwt.claims', json_build_object('sub', v_teacher, 'role', 'authenticated')::text, true);
+    perform set_config('request.jwt.claim.sub', v_teacher::text, true);
+    perform public.book_trial(v_reg_d,
+      (select id from public.class_sessions where branch_id = v_branch and not cancelled and class_date >= v_today
+        order by class_date, starts_at limit 1));
+
+    perform set_config('request.jwt.claims', json_build_object('sub', v_admin, 'role', 'authenticated')::text, true);
+    perform set_config('request.jwt.claim.sub', v_admin::text, true);
+    perform public.set_session_teachers(s.id, array[v_teacher], false)
+       from public.class_sessions s where s.branch_id = v_branch and not s.cancelled and s.class_date >= v_today;
+    raise notice 'กล้า: trial booked; teacher set on upcoming classes';
   end if;
 
   perform set_config('request.jwt.claims', '', true);

@@ -17,11 +17,18 @@ type NavKey =
   | "payments"
   | "kiosk"
   | "portal"
-  | "register";
+  | "register"
+  | "sessions"
+  | "trials"
+  | "audit"
+  | "queue"
+  | "import";
 
 const STAFF_NAV: [string, NavKey][] = [
   ["/staff", "staff"],
+  ["/staff/sessions", "sessions"],
   ["/staff/registrations", "registrations"],
+  ["/staff/trials", "trials"],
   ["/staff/students", "students"],
   ["/staff/payments", "payments"],
 ];
@@ -33,9 +40,12 @@ const NAV_BY_ROLE: Partial<Record<Role, [string, NavKey][]>> = {
     ["/admin/schedule", "schedule"],
     ["/admin/packages", "packages"],
     ["/admin/users", "users"],
+    ["/admin/queue", "queue"],
+    ["/admin/audit", "audit"],
+    ["/admin/import", "import"],
     ...STAFF_NAV,
   ],
-  branch_manager: [...STAFF_NAV, ["/kiosk", "kiosk"]],
+  branch_manager: [...STAFF_NAV, ["/admin/import", "import"], ["/kiosk", "kiosk"]],
   teacher: [...STAFF_NAV, ["/kiosk", "kiosk"]],
   customer: [
     ["/portal", "portal"],

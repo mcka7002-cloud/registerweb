@@ -485,14 +485,14 @@ isOneToOne: false
                   ]
                 },"documents": {
                   Row: {
-                    "branch_id": string,"customer_address": string | null,"customer_name": string,"customer_tax_id": string | null,"doc_no": string,"doc_type": Database["public"]['Enums']["doc_type"],"id": string,"issued_at": string,"issued_by": string | null,"order_id": string,"status": Database["public"]['Enums']["doc_status"],"subtotal": number,"total": number,"vat_amount": number,"vat_inclusive": boolean,"vat_rate": number,"void_reason": string | null,"void_requested_by": string | null,"voided_at": string | null,"voided_by": string | null
+                    "branch_id": string,"customer_address": string | null,"customer_name": string,"customer_tax_id": string | null,"doc_no": string,"doc_type": Database["public"]['Enums']["doc_type"],"id": string,"issued_at": string,"issued_by": string | null,"order_id": string,"status": Database["public"]['Enums']["doc_status"],"subtotal": number,"total": number,"vat_amount": number,"vat_inclusive": boolean,"vat_rate": number,"void_reason": string | null,"void_requested_at": string | null,"void_requested_by": string | null,"voided_at": string | null,"voided_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "branch_id": string,"customer_address"?: string | null,"customer_name": string,"customer_tax_id"?: string | null,"doc_no": string,"doc_type": Database["public"]['Enums']["doc_type"],"id"?: string,"issued_at"?: string,"issued_by"?: string | null,"order_id": string,"status"?: Database["public"]['Enums']["doc_status"],"subtotal": number,"total": number,"vat_amount"?: number,"vat_inclusive"?: boolean,"vat_rate"?: number,"void_reason"?: string | null,"void_requested_by"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "branch_id": string,"customer_address"?: string | null,"customer_name": string,"customer_tax_id"?: string | null,"doc_no": string,"doc_type": Database["public"]['Enums']["doc_type"],"id"?: string,"issued_at"?: string,"issued_by"?: string | null,"order_id": string,"status"?: Database["public"]['Enums']["doc_status"],"subtotal": number,"total": number,"vat_amount"?: number,"vat_inclusive"?: boolean,"vat_rate"?: number,"void_reason"?: string | null,"void_requested_at"?: string | null,"void_requested_by"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Update: {
-                    "branch_id"?: string,"customer_address"?: string | null,"customer_name"?: string,"customer_tax_id"?: string | null,"doc_no"?: string,"doc_type"?: Database["public"]['Enums']["doc_type"],"id"?: string,"issued_at"?: string,"issued_by"?: string | null,"order_id"?: string,"status"?: Database["public"]['Enums']["doc_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number,"vat_inclusive"?: boolean,"vat_rate"?: number,"void_reason"?: string | null,"void_requested_by"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "branch_id"?: string,"customer_address"?: string | null,"customer_name"?: string,"customer_tax_id"?: string | null,"doc_no"?: string,"doc_type"?: Database["public"]['Enums']["doc_type"],"id"?: string,"issued_at"?: string,"issued_by"?: string | null,"order_id"?: string,"status"?: Database["public"]['Enums']["doc_status"],"subtotal"?: number,"total"?: number,"vat_amount"?: number,"vat_inclusive"?: boolean,"vat_rate"?: number,"void_reason"?: string | null,"void_requested_at"?: string | null,"void_requested_by"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -703,14 +703,14 @@ isOneToOne: false
                   ]
                 },"memberships": {
                   Row: {
-                    "created_at": string,"expires_on": string,"id": string,"kind": string,"order_item_id": string | null,"starts_on": string,"student_id": string,"waive_reason": string | null,"waived_by": string | null
+                    "created_at": string,"expires_on": string,"id": string,"kind": string,"order_item_id": string | null,"starts_on": string,"student_id": string,"voided_at": string | null,"waive_reason": string | null,"waived_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"expires_on": string,"id"?: string,"kind": string,"order_item_id"?: string | null,"starts_on": string,"student_id": string,"waive_reason"?: string | null,"waived_by"?: string | null
+                    "created_at"?: string,"expires_on": string,"id"?: string,"kind": string,"order_item_id"?: string | null,"starts_on": string,"student_id": string,"voided_at"?: string | null,"waive_reason"?: string | null,"waived_by"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"expires_on"?: string,"id"?: string,"kind"?: string,"order_item_id"?: string | null,"starts_on"?: string,"student_id"?: string,"waive_reason"?: string | null,"waived_by"?: string | null
+                    "created_at"?: string,"expires_on"?: string,"id"?: string,"kind"?: string,"order_item_id"?: string | null,"starts_on"?: string,"student_id"?: string,"voided_at"?: string | null,"waive_reason"?: string | null,"waived_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -1157,14 +1157,14 @@ isOneToOne: false
                   ]
                 },"registrations": {
                   Row: {
-                    "account_id": string | null,"branch_id": string,"created_at": string,"id": string,"payload": NonNullable<Json>,"pdpa_consent": boolean,"publish_consent": boolean,"reject_reason": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["registration_status"],"student_id": string | null,"trial_at": string | null
+                    "account_id": string | null,"branch_id": string,"created_at": string,"id": string,"payload": NonNullable<Json>,"pdpa_consent": boolean,"publish_consent": boolean,"reject_reason": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["registration_status"],"student_id": string | null,"trial_at": string | null,"trial_attended_at": string | null,"trial_notes": Json | null,"trial_session_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "account_id"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"payload": NonNullable<Json>,"pdpa_consent": boolean,"publish_consent"?: boolean,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["registration_status"],"student_id"?: string | null,"trial_at"?: string | null
+                    "account_id"?: string | null,"branch_id": string,"created_at"?: string,"id"?: string,"payload": NonNullable<Json>,"pdpa_consent": boolean,"publish_consent"?: boolean,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["registration_status"],"student_id"?: string | null,"trial_at"?: string | null,"trial_attended_at"?: string | null,"trial_notes"?: Json | null,"trial_session_id"?: string | null
                   }
                   Update: {
-                    "account_id"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"payload"?: NonNullable<Json>,"pdpa_consent"?: boolean,"publish_consent"?: boolean,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["registration_status"],"student_id"?: string | null,"trial_at"?: string | null
+                    "account_id"?: string | null,"branch_id"?: string,"created_at"?: string,"id"?: string,"payload"?: NonNullable<Json>,"pdpa_consent"?: boolean,"publish_consent"?: boolean,"reject_reason"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["registration_status"],"student_id"?: string | null,"trial_at"?: string | null,"trial_attended_at"?: string | null,"trial_notes"?: Json | null,"trial_session_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -1190,6 +1190,12 @@ isOneToOne: false
       columns: ["student_id"]
 isOneToOne: false
       referencedRelation: "students"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "registrations_trial_session_id_fkey"
+      columns: ["trial_session_id"]
+isOneToOne: false
+      referencedRelation: "class_sessions"
       referencedColumns: ["id"]
     }
                   ]
@@ -1553,6 +1559,9 @@ isOneToOne: false
 "_fulfill_order":
 { Args: { "p_order": string }; Returns: Json
                            },
+"_parse_import_date":
+{ Args: { "p": string }; Returns: string
+                           },
 "approve_registration":
 { Args: { "p_registration": string,"p_student": Json }; Returns: Json
                            },
@@ -1561,6 +1570,9 @@ isOneToOne: false
                            },
 "book_sessions":
 { Args: { "p_package": string,"p_sessions": (string)[] }; Returns: Json
+                           },
+"book_trial":
+{ Args: { "p_registration": string,"p_session": string }; Returns: Json
                            },
 "build_teacher_days":
 { Args: { "p_run": string }; Returns: number
@@ -1582,6 +1594,9 @@ isOneToOne: false
 "has_branch":
 { Args: { "b": string }; Returns: boolean
                            },
+"import_students":
+{ Args: { "p_branch": string,"p_commit": boolean,"p_rows": Json }; Returns: Json
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
@@ -1590,6 +1605,9 @@ isOneToOne: false
                            },
 "is_staff":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"link_parent":
+{ Args: { "p_email": string,"p_student": string }; Returns: Json
                            },
 "membership_active":
 { Args: { "on_date"?: string,"s": string }; Returns: boolean
@@ -1615,17 +1633,32 @@ isOneToOne: false
 "record_checkin":
 { Args: { "p_barcode": string,"p_branch": string,"p_class_session": string,"p_client_uuid": string,"p_method"?: Database["public"]['Enums']["attendance_method"],"p_reason"?: string,"p_scanned_at": string,"p_source"?: Database["public"]['Enums']["attendance_source"] }; Returns: Json
                            },
+"record_trial":
+{ Args: { "p_attended": boolean,"p_notes": Json,"p_registration": string }; Returns: Json
+                           },
 "reject_registration":
 { Args: { "p_reason": string,"p_registration": string }; Returns: Json
                            },
 "request_package_purchase":
 { Args: { "p_method": Database["public"]['Enums']["payment_method"],"p_slip_path": string,"p_student": string,"p_template": string,"p_with_membership": boolean }; Returns: Json
                            },
+"request_void_document":
+{ Args: { "p_document": string,"p_reason": string }; Returns: Json
+                           },
 "review_order":
 { Args: { "p_approve": boolean,"p_order": string,"p_reason": string }; Returns: Json
                            },
+"review_void_document":
+{ Args: { "p_approve": boolean,"p_document": string,"p_reason": string }; Returns: Json
+                           },
 "sell_package":
 { Args: { "p_method": Database["public"]['Enums']["payment_method"],"p_student": string,"p_template": string,"p_with_membership": boolean }; Returns: Json
+                           },
+"set_session_teachers":
+{ Args: { "p_session": string,"p_teachers": (string)[],"p_whole_schedule": boolean }; Returns: Json
+                           },
+"staff_checkin":
+{ Args: { "p_client_uuid": string,"p_reason": string,"p_session": string,"p_student": string }; Returns: Json
                            },
 "staff_sees_profile":
 { Args: { "p": string }; Returns: boolean
@@ -1635,10 +1668,13 @@ isOneToOne: false
                            },
 "update_student":
 { Args: { "p_fields": Json,"p_student": string }; Returns: Json
+                           },
+"void_attendance":
+{ Args: { "p_attendance": string,"p_reason": string }; Returns: Json
                            }
           }
           Enums: {
-            "app_role": "admin"|"branch_manager"|"teacher"|"customer"|"kiosk","approval_status": "pending"|"approved"|"rejected","attendance_method": "scan"|"manual","attendance_source": "online"|"offline_sync","booking_status": "booked"|"attended"|"absent"|"cancelled","doc_status": "issued"|"void","doc_type": "receipt"|"tax_invoice","employment_status": "probation"|"permanent","exam_round_status": "open"|"scored"|"closed","medal": "gold"|"silver"|"bronze"|"participant","notify_channel": "email"|"line","order_item_type": "package"|"membership"|"membership_renewal"|"product"|"exam_fee"|"exam_photo"|"card_fee","order_status": "draft"|"pending_review"|"approved"|"rejected","package_status": "active"|"expired","payment_method": "cash"|"transfer"|"promptpay"|"slip","payroll_status": "open"|"closed"|"paid","post_kind": "news"|"album"|"video"|"achievement","post_status": "draft"|"pending"|"published"|"archived","post_visibility": "public"|"customers","promo_kind": "percent"|"amount"|"sibling"|"bonus_sessions"|"multi_month","registration_status": "pending"|"trial_booked"|"approved"|"rejected","student_status": "active"|"inactive","txn_type": "income"|"expense"
+            "app_role": "admin"|"branch_manager"|"teacher"|"customer"|"kiosk","approval_status": "pending"|"approved"|"rejected","attendance_method": "scan"|"manual","attendance_source": "online"|"offline_sync","booking_status": "booked"|"attended"|"absent"|"cancelled","doc_status": "issued"|"void","doc_type": "receipt"|"tax_invoice","employment_status": "probation"|"permanent","exam_round_status": "open"|"scored"|"closed","medal": "gold"|"silver"|"bronze"|"participant","notify_channel": "email"|"line","order_item_type": "package"|"membership"|"membership_renewal"|"product"|"exam_fee"|"exam_photo"|"card_fee","order_status": "draft"|"pending_review"|"approved"|"rejected","package_status": "active"|"expired"|"void","payment_method": "cash"|"transfer"|"promptpay"|"slip","payroll_status": "open"|"closed"|"paid","post_kind": "news"|"album"|"video"|"achievement","post_status": "draft"|"pending"|"published"|"archived","post_visibility": "public"|"customers","promo_kind": "percent"|"amount"|"sibling"|"bonus_sessions"|"multi_month","registration_status": "pending"|"trial_booked"|"approved"|"rejected","student_status": "active"|"inactive","txn_type": "income"|"expense"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1754,7 +1790,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "app_role": ["admin", "branch_manager", "teacher", "customer", "kiosk"],"approval_status": ["pending", "approved", "rejected"],"attendance_method": ["scan", "manual"],"attendance_source": ["online", "offline_sync"],"booking_status": ["booked", "attended", "absent", "cancelled"],"doc_status": ["issued", "void"],"doc_type": ["receipt", "tax_invoice"],"employment_status": ["probation", "permanent"],"exam_round_status": ["open", "scored", "closed"],"medal": ["gold", "silver", "bronze", "participant"],"notify_channel": ["email", "line"],"order_item_type": ["package", "membership", "membership_renewal", "product", "exam_fee", "exam_photo", "card_fee"],"order_status": ["draft", "pending_review", "approved", "rejected"],"package_status": ["active", "expired"],"payment_method": ["cash", "transfer", "promptpay", "slip"],"payroll_status": ["open", "closed", "paid"],"post_kind": ["news", "album", "video", "achievement"],"post_status": ["draft", "pending", "published", "archived"],"post_visibility": ["public", "customers"],"promo_kind": ["percent", "amount", "sibling", "bonus_sessions", "multi_month"],"registration_status": ["pending", "trial_booked", "approved", "rejected"],"student_status": ["active", "inactive"],"txn_type": ["income", "expense"]
+            "app_role": ["admin", "branch_manager", "teacher", "customer", "kiosk"],"approval_status": ["pending", "approved", "rejected"],"attendance_method": ["scan", "manual"],"attendance_source": ["online", "offline_sync"],"booking_status": ["booked", "attended", "absent", "cancelled"],"doc_status": ["issued", "void"],"doc_type": ["receipt", "tax_invoice"],"employment_status": ["probation", "permanent"],"exam_round_status": ["open", "scored", "closed"],"medal": ["gold", "silver", "bronze", "participant"],"notify_channel": ["email", "line"],"order_item_type": ["package", "membership", "membership_renewal", "product", "exam_fee", "exam_photo", "card_fee"],"order_status": ["draft", "pending_review", "approved", "rejected"],"package_status": ["active", "expired", "void"],"payment_method": ["cash", "transfer", "promptpay", "slip"],"payroll_status": ["open", "closed", "paid"],"post_kind": ["news", "album", "video", "achievement"],"post_status": ["draft", "pending", "published", "archived"],"post_visibility": ["public", "customers"],"promo_kind": ["percent", "amount", "sibling", "bonus_sessions", "multi_month"],"registration_status": ["pending", "trial_booked", "approved", "rejected"],"student_status": ["active", "inactive"],"txn_type": ["income", "expense"]
           }
         }
 } as const

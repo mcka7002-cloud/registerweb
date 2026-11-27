@@ -50,9 +50,11 @@ export default async function RegistrationsPage() {
                             ? "bg-warning text-warning-foreground"
                             : r.status === "approved"
                               ? "bg-success text-success-foreground"
-                              : undefined
+                              : r.status === "trial_booked"
+                                ? "bg-accent text-accent-foreground"
+                                : undefined
                         }
-                        variant={r.status === "trial_booked" ? "default" : "secondary"}
+                        variant="secondary"
                       >
                         {t(`statuses.${r.status}`)}
                       </Badge>
