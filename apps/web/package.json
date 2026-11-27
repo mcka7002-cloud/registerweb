@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:staging": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env staging",
     "deploy:prod": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env production",
@@ -49,6 +50,7 @@
     "serwist": "^9.0.14",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.8.3",
+    "vitest": "^3.1.4",
     "wrangler": "^4.168.0"
   }
 }

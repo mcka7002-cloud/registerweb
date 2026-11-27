@@ -22,7 +22,7 @@ importers:
         version: 5.3.0
       '@opennextjs/cloudflare':
         specifier: ^1.20.19
-        version: 1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@types/node@22.20.5))
+        version: 1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5))
       '@supabase/supabase-js':
         specifier: ^2.49.4
         version: 2.119.0
@@ -65,7 +65,7 @@ importers:
         version: 5.9.3
       wrangler:
         specifier: ^4.168.0
-        version: 4.168.0(@types/node@22.20.5)
+        version: 4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))
 
   apps/web:
     dependencies:
@@ -77,7 +77,7 @@ importers:
         version: 5.3.0
       '@opennextjs/cloudflare':
         specifier: ^1.20.19
-        version: 1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@types/node@22.20.5))
+        version: 1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1)))
       '@registerweb/domain':
         specifier: workspace:*
         version: link:../../packages/domain
@@ -166,9 +166,12 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
+      vitest:
+        specifier: ^3.1.4
+        version: 3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1)
       wrangler:
         specifier: ^4.168.0
-        version: 4.168.0(@types/node@22.20.5)
+        version: 4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))
 
   packages/db:
     devDependencies:
@@ -470,6 +473,9 @@ packages:
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
+
+  '@cloudflare/workers-types@5.20261127.1':
+    resolution: {integrity: sha512-G0vZByiP+V6JvPdyf1d7kPYow3yOk4vZV0PRiFhBeRjVjCT1uVJurKTpJca2WVTnb2TsicHdpC3KeHhwSciIlg==}
 
   '@cloudflare/workers-utils@0.57.0':
     resolution: {integrity: sha512-6NulTDuddhxZUvCmDeyIVtn54Wo0rTV58YztF46V8NKBpH+PISm3aiudkCn0vLlRWeyYReNu5XmdE7hyvTwoLg==}
@@ -5505,12 +5511,17 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20261123.1':
     optional: true
 
-  '@cloudflare/workers-utils@0.57.0':
+  '@cloudflare/workers-types@5.20261127.1':
+    optional: true
+
+  '@cloudflare/workers-utils@0.57.0(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))':
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       chalk: 5.3.0
       dotenv: 16.3.1
       undici: 7.30.2
+    optionalDependencies:
+      vitest: 3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1)
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -5955,7 +5966,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@opennextjs/cloudflare@1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@types/node@22.20.5))':
+  '@opennextjs/cloudflare@1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1)))':
     dependencies:
       '@ast-grep/napi': 0.45.3
       '@dotenvx/dotenvx': 2.38.2
@@ -5969,7 +5980,28 @@ snapshots:
       next: 15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       resolve.exports: 2.0.4
       ts-tqdm: 0.8.6
-      wrangler: 4.168.0(@types/node@22.20.5)
+      wrangler: 4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))
+      yargs: 18.2.0
+    transitivePeerDependencies:
+      - diff
+      - encoding
+      - supports-color
+
+  '@opennextjs/cloudflare@1.20.19(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(wrangler@4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5))':
+    dependencies:
+      '@ast-grep/napi': 0.45.3
+      '@dotenvx/dotenvx': 2.38.2
+      '@opennextjs/aws': 4.2.1(next@15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
+      ci-info: 4.5.0
+      cloudflare: 4.5.0
+      comment-json: 4.6.2
+      enquirer: 2.4.1
+      esbuild: 0.28.2
+      glob: 14.0.6
+      next: 15.5.29(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      resolve.exports: 2.0.4
+      ts-tqdm: 0.8.6
+      wrangler: 4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))
       yargs: 18.2.0
     transitivePeerDependencies:
       - diff
@@ -10083,11 +10115,11 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20261123.1
       '@cloudflare/workerd-windows-64': 1.20261123.1
 
-  wrangler@4.168.0(@types/node@22.20.5):
+  wrangler@4.168.0(@cloudflare/workers-types@5.20261127.1)(@types/node@22.20.5)(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1)):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.1
       '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20261123.1)
-      '@cloudflare/workers-utils': 0.57.0
+      '@cloudflare/workers-utils': 0.57.0(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.46.0)(yaml@2.9.1))
       '@cspotcode/source-map-support': 0.8.1
       '@types/yargs': 17.0.24
       cloudflare: 5.2.0
@@ -10099,6 +10131,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20261123.1
     optionalDependencies:
+      '@cloudflare/workers-types': 5.20261127.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - '@types/node'

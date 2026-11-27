@@ -15,12 +15,15 @@ import { useErrorText } from "./use-error-text";
 
 type Method = "promptpay" | "transfer";
 
-/** Server actions accept ~1 MB bodies by default; larger photos are re-encoded as JPEG in the browser first. */
-const SHRINK_ABOVE_BYTES = 900 * 1024;
-const SHRINK_MAX_SIDE = 1800;
+/**
+ * Every slip is re-encoded as JPEG in the browser (≈150 KB): keeps uploads fast and R2 storage small (ADR 0002).
+ * 1200 px on the long side is enough to read a bank slip.
+ */
+const SHRINK_MAX_SIDE = 1200;
+const SHRINK_QUALITY = 0.75;
 
 async function shrinkImage(file: File): Promise<File> {
-  if (file.size <= SHRINK_ABOVE_BYTES || typeof createImageBitmap !== "function") return file;
+  if (typeof createImageBitmap !== "function") return file;
   try {
     const bitmap = await createImageBitmap(file);
     const scale = Math.min(1, SHRINK_MAX_SIDE / Math.max(bitmap.width, bitmap.height));
@@ -29,7 +32,7 @@ async function shrinkImage(file: File): Promise<File> {
     canvas.height = Math.round(bitmap.height * scale);
     canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", SHRINK_QUALITY));
     if (!blob || blob.size >= file.size) return file;
     return new File([blob], file.name.replace(/\.\w+$/, "") + ".jpg", { type: "image/jpeg" });
   } catch {

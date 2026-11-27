@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
-import { createClient } from "@/lib/supabase/server";
+import { putFile } from "@/lib/files/store";
 import { SLIP_MAX_BYTES, SLIP_TYPES } from "./shared";
 
 const purchaseSchema = z.object({
@@ -21,7 +21,7 @@ export interface PurchaseResult {
 
 /**
  * Parent submits a purchase with a slip (FormData: student_id, template_id, with_membership "0"|"1",
- * method, slip). Uploads the slip to `slips/<user id>/<uuid>.<ext>` as the user, then calls
+ * method, slip). Stores the slip in R2 at `slips/<user id>/<uuid>.<ext>`, then calls
  * `request_package_purchase`.
  */
 export async function submitPurchase(form: FormData): Promise<RpcResult<PurchaseResult>> {
@@ -39,11 +39,11 @@ export async function submitPurchase(form: FormData): Promise<RpcResult<Purchase
   const ext = SLIP_TYPES[slip.type];
   if (!ext || slip.size > SLIP_MAX_BYTES) return { ok: false, code: "SLIP_INVALID" };
 
-  const supabase = await createClient();
   const path = `${me.id}/${crypto.randomUUID()}.${ext}`;
-  const upload = await supabase.storage.from("slips").upload(path, slip, { contentType: slip.type, upsert: false });
-  if (upload.error) {
-    console.error("[submitPurchase] upload", upload.error);
+  try {
+    await putFile("slips", path, slip);
+  } catch (err) {
+    console.error("[submitPurchase] upload", err);
     return { ok: false, code: "UPLOAD_FAILED" };
   }
 

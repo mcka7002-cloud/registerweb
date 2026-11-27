@@ -1,9 +1,7 @@
 import { UserRound } from "lucide-react";
+import { fileUrl } from "@/lib/files/access";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
-
-const BUCKET = "student-photos";
-const SIGNED_URL_SECONDS = 600;
 
 /** `students.photo_path` for one student (RLS: staff of the branch or a linked customer). */
 export async function getStudentPhotoPath(studentId: string): Promise<string | null> {
@@ -14,8 +12,8 @@ export async function getStudentPhotoPath(studentId: string): Promise<string | n
 }
 
 /**
- * Student photo from the private `student-photos` bucket, shown through a short-lived signed URL
- * (storage policy storage_photos_read decides who may sign it). Falls back to an avatar placeholder.
+ * Student photo, served by `/files` (lib/files/access decides who may read it). Shows an avatar placeholder
+ * when there is no photo.
  */
 export async function StudentPhoto({
   path,
@@ -26,13 +24,7 @@ export async function StudentPhoto({
   alt: string;
   className?: string;
 }) {
-  let url: string | null = null;
-  if (path) {
-    const supabase = await createClient();
-    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_SECONDS);
-    if (error) console.error("[StudentPhoto] createSignedUrl failed", error);
-    url = data?.signedUrl ?? null;
-  }
+  const url = path ? fileUrl("student-photos", path) : null;
 
   const frame = cn(
     "flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted text-muted-foreground",
@@ -47,25 +39,20 @@ export async function StudentPhoto({
   }
   return (
     <div className={frame}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- signed URLs change every render, next/image would not cache them */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- private, access-checked URL; next/image would proxy it without the session */}
       <img src={url} alt={alt} className="size-full object-cover" />
     </div>
   );
 }
 
-/** Signs many photo paths in one call (for lists); path -> signed URL. */
-export async function signStudentPhotos(paths: (string | null | undefined)[]): Promise<Map<string, string>> {
-  const list = [...new Set(paths.filter((p): p is string => Boolean(p)))];
+/** Photo URLs for many paths (for lists); path -> URL. */
+export function studentPhotoUrls(paths: (string | null | undefined)[]): Map<string, string> {
   const urls = new Map<string, string>();
-  if (list.length === 0) return urls;
-  const supabase = await createClient();
-  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(list, SIGNED_URL_SECONDS);
-  if (error) console.error("[signStudentPhotos]", error);
-  for (const d of data ?? []) if (d.path && d.signedUrl) urls.set(d.path, d.signedUrl);
+  for (const p of paths) if (p) urls.set(p, fileUrl("student-photos", p));
   return urls;
 }
 
-/** Small round photo for table rows; `url` comes from signStudentPhotos. */
+/** Small round photo for table rows; `url` comes from studentPhotoUrls. */
 export function StudentThumb({ url, className }: { url: string | null | undefined; className?: string }) {
   const frame = cn(
     "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-muted-foreground",
@@ -73,7 +60,7 @@ export function StudentThumb({ url, className }: { url: string | null | undefine
   );
   return url ? (
     <span className={frame}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- private, access-checked URL */}
       <img src={url} alt="" className="size-full object-cover" />
     </span>
   ) : (

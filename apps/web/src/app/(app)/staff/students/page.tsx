@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BeltChip } from "@/features/belts/belt";
-import { signStudentPhotos, StudentThumb } from "@/features/students/components/student-photo";
+import { studentPhotoUrls, StudentThumb } from "@/features/students/components/student-photo";
 import { searchStudents } from "@/features/students/queries";
 import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { formatThaiDate, todayInBangkok } from "@/lib/utils";
@@ -20,7 +20,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
   const [t, tc, students] = await Promise.all([getTranslations("students"), getTranslations(), searchStudents(q)]);
   const today = todayInBangkok();
   const soon = addDays(today, 30);
-  const photos = await signStudentPhotos(students.map((s) => s.photo_path));
+  const photos = studentPhotoUrls(students.map((s) => s.photo_path));
 
   return (
     <>

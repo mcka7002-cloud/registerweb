@@ -1,0 +1,24 @@
+name: Prod health check
+
+# Daily: the app answers and Supabase is not paused. A failed run emails the repo owner (GitHub default).
+on:
+  schedule:
+    - cron: "0 1 * * *" # 08:00 Bangkok, before classes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: App login page
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "${{ vars.APP_URL }}/login")
+          echo "app /login → $code"; test "$code" = "200"
+      - name: Supabase auth (fails when the project is paused)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 -H "apikey: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" "${{ vars.NEXT_PUBLIC_SUPABASE_URL }}/auth/v1/health")
+          echo "supabase auth → $code"; test "$code" = "200"

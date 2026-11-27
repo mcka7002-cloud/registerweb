@@ -11,8 +11,15 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "observability": { "enabled": true },
+  // Slips and student photos (lib/files). Bindings are not inherited, so each env names its own bucket.
+  // Backups go to a separate bucket written only by GitHub Actions; the Worker has no binding to it.
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "registerweb-files-local" }],
   "env": {
-    "staging": {},
-    "production": {}
+    "staging": {
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "registerweb-files-staging" }]
+    },
+    "production": {
+      "r2_buckets": [{ "binding": "FILES", "bucket_name": "registerweb-files" }]
+    }
   }
 }

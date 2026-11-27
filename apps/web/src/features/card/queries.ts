@@ -1,7 +1,5 @@
+import { fileUrl } from "@/lib/files/access";
 import { createClient } from "@/lib/supabase/server";
-
-const PHOTO_BUCKET = "student-photos";
-const SIGNED_URL_SECONDS = 600;
 
 export interface CardStudent {
   id: string;
@@ -14,7 +12,7 @@ export interface CardStudent {
   beltRankId: number;
   beltName: string | null;
   branchName: string | null;
-  /** Short-lived signed URL of the photo, null when there is none. */
+  /** URL of the photo (served by /files), null when there is none. */
   photoUrl: string | null;
 }
 
@@ -32,12 +30,7 @@ export async function getCardStudent(id: string): Promise<CardStudent | null> {
   if (error) console.error("[getCardStudent]", error);
   if (!data) return null;
 
-  let photoUrl: string | null = null;
-  if (data.photo_path) {
-    const signed = await supabase.storage.from(PHOTO_BUCKET).createSignedUrl(data.photo_path, SIGNED_URL_SECONDS);
-    if (signed.error) console.error("[getCardStudent] createSignedUrl", signed.error);
-    photoUrl = signed.data?.signedUrl ?? null;
-  }
+  const photoUrl = data.photo_path ? fileUrl("student-photos", data.photo_path) : null;
 
   return {
     id: data.id,

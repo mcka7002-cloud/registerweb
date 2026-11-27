@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import type { Json } from "@/lib/database.types";
+import { putFile } from "@/lib/files/store";
 import { createClient } from "@/lib/supabase/server";
 import {
   PHOTO_MAX_BYTES,
@@ -43,15 +44,14 @@ export async function submitRegistration(_prev: RegisterResult | null, formData:
   const f = parsed.data;
   const supabase = await createClient();
 
-  // Upload first; the path must sit in the applicant's own folder (storage policy storage_own_upload).
+  // Upload first, into the applicant's own folder (approve_registration only copies paths from that folder).
   let photo_path: string | null = null;
   if (photo && photoMime) {
     const path = `${me.id}/${crypto.randomUUID()}.${PHOTO_TYPES[photoMime]}`;
-    const { error: uploadError } = await supabase.storage
-      .from("student-photos")
-      .upload(path, photo, { contentType: photoMime, upsert: false });
-    if (uploadError) {
-      console.error("[submitRegistration] photo upload failed", uploadError);
+    try {
+      await putFile("student-photos", path, new File([photo], photo.name, { type: photoMime }));
+    } catch (err) {
+      console.error("[submitRegistration] photo upload failed", err);
       return { ok: false, code: "UPLOAD_FAILED", fields: ["photo"] };
     }
     photo_path = path;
