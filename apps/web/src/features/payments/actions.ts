@@ -8,8 +8,8 @@ import { putFile } from "@/lib/files/store";
 import { SLIP_MAX_BYTES, SLIP_TYPES } from "./shared";
 
 const purchaseSchema = z.object({
-  student_id: z.string().uuid(),
-  template_id: z.string().uuid(),
+  student_id: z.guid(),
+  template_id: z.guid(),
   with_membership: z.enum(["0", "1"]).transform((v) => v === "1"),
   method: z.enum(["transfer", "promptpay"]),
 });
@@ -63,7 +63,7 @@ export async function submitPurchase(form: FormData): Promise<RpcResult<Purchase
 
 const reviewSchema = z
   .object({
-    order_id: z.string().uuid(),
+    order_id: z.guid(),
     approve: z.boolean(),
     reason: z.string().trim().max(500).optional(),
   })

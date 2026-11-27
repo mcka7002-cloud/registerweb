@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans-thai": "^5.2.5",
-    "@opennextjs/cloudflare": "^1.20.19",
     "@supabase/supabase-js": "^2.49.4",
     "next": "^15.3.2",
     "react": "^19.1.0",
@@ -24,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@opennextjs/cloudflare": "^1.20.19",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",

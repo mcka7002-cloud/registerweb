@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { todayInBangkok } from "@/lib/utils";
 import { INVALID_INPUT, writeResult } from "./write-result";
 
-const uuid = z.string().uuid();
+const uuid = z.guid();
 const optText = z
   .string()
   .trim()

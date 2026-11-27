@@ -43,9 +43,12 @@ reliable in Thailand. Nobody works on it full-time after go-live.
 ### 3. Delivery
 
 - Every PR runs CI (lint, typecheck, tests, build, SQL tests) and the security workflow.
-- Every prod deploy runs, in order: **security gate** (secrets, dependency audit, CodeQL, DB/RLS checks, Supabase
-  security advisor, prod-config checks) → approval → `supabase db push` → `wrangler deploy`. There is no way to skip
-  the gate.
+- Every prod deploy runs, in order: the **security gate** (`security.yml`: gitleaks over the full history,
+  `pnpm audit --prod` at high, CodeQL failing at security severity 7+, SQL rule tests, RLS on every table and
+  `search_path` on every security definer function) → approval → config and Supabase security-advisor checks →
+  `supabase db push` → build → bundle guard → `wrangler deploy`. There is no way to skip the gate.
+- Build-only tools (`@opennextjs/cloudflare`, `wrangler`) are dev dependencies: the Worker is bundled at build
+  time, so `pnpm audit --prod` covers exactly what ships.
 - `NEXT_PUBLIC_*` values are baked in at build time, so each environment builds its own bundle.
 - Rollback: `wrangler rollback` for the app; restore a dump from R2 for the database.
 

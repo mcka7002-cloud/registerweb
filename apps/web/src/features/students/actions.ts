@@ -6,7 +6,7 @@ import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
 
 const INVALID: RpcResult<never> = { ok: false, code: "INVALID_INPUT" };
-const uuid = z.string().uuid();
+const uuid = z.guid();
 const text = z.string().trim();
 const num = z
   .union([z.number(), z.string().trim()])

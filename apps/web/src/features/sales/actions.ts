@@ -6,8 +6,8 @@ import { requireRole, STAFF_ROLES } from "@/lib/auth";
 import { callRpc, type RpcResult } from "@/lib/rpc";
 
 const sellSchema = z.object({
-  student_id: z.string().uuid(),
-  template_id: z.string().uuid(),
+  student_id: z.guid(),
+  template_id: z.guid(),
   with_membership: z.boolean(),
   method: z.enum(["cash", "transfer", "promptpay"]),
 });

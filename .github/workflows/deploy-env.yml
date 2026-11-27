@@ -1,0 +1,90 @@
+name: Deploy one environment
+
+# Called by deploy.yml. Order: config guards → (prod) Supabase security advisor → db push → build → bundle
+# guard → deploy web and site. Any failed step stops the deploy.
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true # staging | production (also the wrangler env name)
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      NEXT_PUBLIC_DEFAULT_BRANCH_ID: ${{ vars.NEXT_PUBLIC_DEFAULT_BRANCH_ID }}
+      NEXT_PUBLIC_REGISTER_URL: ${{ vars.NEXT_PUBLIC_REGISTER_URL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Config guard
+        env:
+          DEV_LOGIN: ${{ vars.NEXT_PUBLIC_DEV_LOGIN }}
+        run: |
+          set -euo pipefail
+          for v in NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY NEXT_PUBLIC_REGISTER_URL CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not set for ${{ inputs.environment }}"; exit 1; fi
+          done
+          if [ -n "${DEV_LOGIN:-}" ]; then echo "::error::NEXT_PUBLIC_DEV_LOGIN must never be set on a cloud environment"; exit 1; fi
+          case "$NEXT_PUBLIC_SUPABASE_URL" in *"$SUPABASE_PROJECT_REF"*) ;; *) echo "::error::Supabase URL does not match the project ref"; exit 1;; esac
+          # The anon key must be an anon key (a service_role JWT here would ship to every browser).
+          role=$(python3 -c 'import base64,json,os; p=os.environ["NEXT_PUBLIC_SUPABASE_ANON_KEY"].split(".")[1]; print(json.loads(base64.urlsafe_b64decode(p+"=="*2)).get("role",""))' 2>/dev/null || echo "?")
+          if [ "$role" != "anon" ]; then echo "::error::NEXT_PUBLIC_SUPABASE_ANON_KEY is not an anon key (role: $role)"; exit 1; fi
+
+      - name: Supabase security advisor (prod)
+        if: inputs.environment == 'production'
+        run: |
+          set -euo pipefail
+          curl -sSf -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/advisors/security" -o advisor.json
+          python3 - <<'PY'
+          import json, sys
+          lints = json.load(open("advisor.json")).get("lints", [])
+          errors = [l for l in lints if l.get("level") == "ERROR"]
+          for l in lints:
+              print(f'{l.get("level")}: {l.get("name")} {l.get("title", "")}')
+          sys.exit(1 if errors else 0)
+          PY
+
+      - name: Database migrations
+        working-directory: packages/db
+        run: |
+          pnpm exec supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          pnpm exec supabase db push --linked --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Build web and site
+        run: |
+          pnpm --filter @registerweb/web exec opennextjs-cloudflare build
+          pnpm --filter @registerweb/site exec opennextjs-cloudflare build
+
+      - name: Bundle guard (no server secrets in browser assets)
+        run: |
+          set -euo pipefail
+          # "service_role" as it appears inside a base64 JWT payload, plus the env var names.
+          if grep -rlE 'c2VydmljZV9yb2xl|SUPABASE_SERVICE_ROLE_KEY|SUPABASE_DB_PASSWORD' apps/web/.open-next/assets apps/site/.open-next/assets; then
+            echo "::error::server secret found in browser assets"; exit 1
+          fi
+
+      - name: Deploy web and site
+        run: |
+          pnpm --filter @registerweb/web exec opennextjs-cloudflare deploy --env ${{ inputs.environment }}
+          pnpm --filter @registerweb/site exec opennextjs-cloudflare deploy --env ${{ inputs.environment }}
